@@ -10,7 +10,7 @@ import { Team, Player, Match, TrainingSession } from "@/types";
 
 interface AppLayoutContext {
   teams: Team[];
-  setTeams: React.Dispatch<React.SetStateAction<Team[]>>; // Will be removed
+  // setTeams: React.Dispatch<React.SetStateAction<Team[]>>; // Removed
   players: Player[];
   onAddPlayer: (player: Omit<Player, "id">) => void;
   matches: Match[];

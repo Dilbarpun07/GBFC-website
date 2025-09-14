@@ -14,18 +14,18 @@ import { Label } from "@/components/ui/label";
 import TeamList from "@/components/teams/TeamList";
 import { Team, Player } from "@/types";
 import { toast } from "sonner";
-import { useOutletContext } from "react-router-dom";
+// import { useOutletContext } from "react-router-dom"; // No longer needed for setTeams
 
-interface AppLayoutContext {
-  teams: Team[];
-  setTeams: React.Dispatch<React.SetStateAction<Team[]>>; // Will be removed
-  onAddPlayer: (player: Omit<Player, "id">) => void;
-  onCreateTeam: (teamName: string) => void; // New context prop
-}
+// interface AppLayoutContext { // No longer needed
+//   teams: Team[];
+//   setTeams: React.Dispatch<React.SetStateAction<Team[]>>;
+//   onAddPlayer: (player: Omit<Player, "id">) => void;
+//   onCreateTeam: (teamName: string) => void;
+// }
 
 interface TeamsPageProps {
   teams: Team[];
-  setTeams: React.Dispatch<React.SetStateAction<Team[]>>; // Will be removed
+  // setTeams: React.Dispatch<React.SetStateAction<Team[]>>; // Removed
   onAddPlayer: (player: Omit<Player, "id">) => void;
   onCreateTeam: (teamName: string) => void; // New prop
 }

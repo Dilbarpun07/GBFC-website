@@ -14,7 +14,7 @@ import { Team, Player, Match, TrainingSession } from "@/types";
 
 interface AppLayoutProps {
   teams: Team[];
-  setTeams: React.Dispatch<React.SetStateAction<Team[]>>; // Keep for now, will be removed
+  // setTeams: React.Dispatch<React.SetStateAction<Team[]>>; // Removed
   players: Player[];
   onAddPlayer: (player: Omit<Player, "id">) => void;
   matches: Match[];
@@ -26,7 +26,7 @@ interface AppLayoutProps {
 
 const AppLayout: React.FC<AppLayoutProps> = ({
   teams,
-  setTeams, // Will be removed
+  // setTeams, // Removed
   players,
   onAddPlayer,
   matches,
@@ -68,7 +68,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
           <Outlet
             context={{
               teams,
-              setTeams, // Will be removed from context
+              // setTeams, // Removed from context
               players,
               onAddPlayer,
               matches,
@@ -124,7 +124,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
             <Outlet
               context={{
                 teams,
-                setTeams, // Will be removed from context
+                // setTeams, // Removed from context
                 players,
                 onAddPlayer,
                 matches,

@@ -11,8 +11,10 @@ import PlayersPage from "./pages/PlayersPage";
 import SchedulePage from "./pages/SchedulePage";
 import TrainingPage from "./pages/TrainingPage";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login"; // Import the new Login page
+import AuthWrapper from "./components/layout/AuthWrapper"; // Import the new AuthWrapper
 import { Team, Player, Match, TrainingSession } from "./types";
-import { supabase } from "./integrations/supabase/client"; // Import Supabase client
+import { supabase } from "./integrations/supabase/client";
 import { toast } from "sonner";
 
 const queryClient = new QueryClient();
@@ -149,47 +151,50 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route
-              path="/"
-              element={
-                <AppLayout
-                  teams={teams}
-                  setTeams={setTeams} // This will be replaced by handleCreateTeam in TeamsPage
-                  players={players}
-                  onAddPlayer={handleAddPlayer}
-                  matches={matches}
-                  onAddMatch={handleAddMatch}
-                  trainingSessions={trainingSessions}
-                  onAddTrainingSession={handleAddTrainingSession}
-                  onCreateTeam={handleCreateTeam} // Pass new team creation handler
-                />
-              }
-            >
-              <Route index element={<DashboardPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route element={<AuthWrapper />}> {/* Protect routes with AuthWrapper */}
               <Route
-                path="teams"
+                path="/"
                 element={
-                  <TeamsPage
+                  <AppLayout
                     teams={teams}
-                    setTeams={setTeams} // This will be replaced by onCreateTeam
+                    setTeams={setTeams} // This will be replaced by handleCreateTeam in TeamsPage
+                    players={players}
                     onAddPlayer={handleAddPlayer}
+                    matches={matches}
+                    onAddMatch={handleAddMatch}
+                    trainingSessions={trainingSessions}
+                    onAddTrainingSession={handleAddTrainingSession}
                     onCreateTeam={handleCreateTeam} // Pass new team creation handler
                   />
                 }
-              />
-              <Route
-                path="players"
-                element={<PlayersPage players={players} teams={teams} />}
-              />
-              <Route
-                path="schedule"
-                element={<SchedulePage matches={matches} teams={teams} onAddMatch={handleAddMatch} />}
-              />
-              <Route
-                path="training"
-                element={<TrainingPage trainingSessions={trainingSessions} teams={teams} players={players} onAddTrainingSession={handleAddTrainingSession} />}
-              />
-              <Route path="*" element={<NotFound />} />
+              >
+                <Route index element={<DashboardPage />} />
+                <Route
+                  path="teams"
+                  element={
+                    <TeamsPage
+                      teams={teams}
+                      setTeams={setTeams} // This will be replaced by onCreateTeam
+                      onAddPlayer={handleAddPlayer}
+                      onCreateTeam={handleCreateTeam} // Pass new team creation handler
+                    />
+                  }
+                />
+                <Route
+                  path="players"
+                  element={<PlayersPage players={players} teams={teams} />}
+                />
+                <Route
+                  path="schedule"
+                  element={<SchedulePage matches={matches} teams={teams} onAddMatch={handleAddMatch} />}
+                />
+                <Route
+                  path="training"
+                  element={<TrainingPage trainingSessions={trainingSessions} teams={teams} players={players} onAddTrainingSession={handleAddTrainingSession} />}
+                />
+                <Route path="*" element={<NotFound />} />
+              </Route>
             </Route>
           </Routes>
         </BrowserRouter>
