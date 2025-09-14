@@ -34,12 +34,12 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ matches, teams, onAddMatch 
   const [time, setTime] = React.useState("");
   const [location, setLocation] = React.useState("");
 
-  const handleAddMatch = () => {
+  const handleAddMatch = async () => {
     if (opponent.trim() && selectedTeamId && date && time.trim() && location.trim()) {
-      onAddMatch({
+      await onAddMatch({
         teamId: selectedTeamId,
         opponent: opponent.trim(),
-        date: format(date, "PPP"),
+        date: format(date, "yyyy-MM-dd"), // Consistent date format
         time: time.trim(),
         location: location.trim(),
       });
@@ -49,7 +49,6 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ matches, teams, onAddMatch 
       setTime("");
       setLocation("");
       setIsDialogOpen(false);
-      toast.success("Match added successfully!");
     } else {
       toast.error("Please fill in all match details.");
     }

@@ -14,27 +14,31 @@ import { Label } from "@/components/ui/label";
 import TeamList from "@/components/teams/TeamList";
 import { Team, Player } from "@/types";
 import { toast } from "sonner";
+import { useOutletContext } from "react-router-dom";
+
+interface AppLayoutContext {
+  teams: Team[];
+  setTeams: React.Dispatch<React.SetStateAction<Team[]>>; // Will be removed
+  onAddPlayer: (player: Omit<Player, "id">) => void;
+  onCreateTeam: (teamName: string) => void; // New context prop
+}
 
 interface TeamsPageProps {
   teams: Team[];
-  setTeams: React.Dispatch<React.SetStateAction<Team[]>>;
+  setTeams: React.Dispatch<React.SetStateAction<Team[]>>; // Will be removed
   onAddPlayer: (player: Omit<Player, "id">) => void;
+  onCreateTeam: (teamName: string) => void; // New prop
 }
 
-const TeamsPage: React.FC<TeamsPageProps> = ({ teams, setTeams, onAddPlayer }) => {
+const TeamsPage: React.FC<TeamsPageProps> = ({ teams, onAddPlayer, onCreateTeam }) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [teamName, setTeamName] = React.useState("");
 
-  const handleCreateTeam = () => {
+  const handleCreateTeam = async () => {
     if (teamName.trim()) {
-      const newTeam: Team = {
-        id: Date.now().toString(), // Simple unique ID for now
-        name: teamName.trim(),
-      };
-      setTeams((prevTeams) => [...prevTeams, newTeam]);
+      await onCreateTeam(teamName.trim()); // Use the Supabase handler
       setTeamName(""); // Clear input
       setIsDialogOpen(false); // Close dialog
-      toast.success("Team created successfully!");
     } else {
       toast.error("Team name cannot be empty.");
     }

@@ -46,9 +46,9 @@ const AddTrainingSessionDialog: React.FC<AddTrainingSessionDialogProps> = ({
     );
   };
 
-  const handleAddSession = () => {
+  const handleAddSession = async () => {
     if (selectedTeamId && date && attendedPlayerIds.length > 0) {
-      onAddTrainingSession({
+      await onAddTrainingSession({
         teamId: selectedTeamId,
         date: format(date, "yyyy-MM-dd"), // Consistent date format
         attendedPlayerIds,
@@ -58,7 +58,6 @@ const AddTrainingSessionDialog: React.FC<AddTrainingSessionDialogProps> = ({
       setDate(undefined);
       setAttendedPlayerIds([]);
       onOpenChange(false);
-      toast.success("Training session added successfully!");
     } else {
       toast.error("Please select a team, date, and at least one player.");
     }

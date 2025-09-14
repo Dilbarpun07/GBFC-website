@@ -28,9 +28,9 @@ const AddPlayerDialog: React.FC<AddPlayerDialogProps> = ({
 }) => {
   const [playerName, setPlayerName] = React.useState("");
 
-  const handleAddPlayer = () => {
+  const handleAddPlayer = async () => {
     if (playerName.trim()) {
-      onAddPlayer({
+      await onAddPlayer({
         name: playerName.trim(),
         teamId,
         matchesPlayed: 0,
@@ -40,7 +40,6 @@ const AddPlayerDialog: React.FC<AddPlayerDialogProps> = ({
       });
       setPlayerName("");
       onOpenChange(false);
-      toast.success("Player added successfully!");
     } else {
       toast.error("Player name cannot be empty.");
     }

@@ -5,22 +5,23 @@ import { useOutletContext } from "react-router-dom";
 import TeamOverviewCard from "@/components/dashboard/TeamOverviewCard";
 import PlayerOverviewCard from "@/components/dashboard/PlayerOverviewCard";
 import UpcomingMatchesCard from "@/components/dashboard/UpcomingMatchesCard";
-import TrainingOverviewCard from "@/components/dashboard/TrainingOverviewCard"; // New import
-import { Team, Player, Match, TrainingSession } from "@/types"; // Updated import
+import TrainingOverviewCard from "@/components/dashboard/TrainingOverviewCard";
+import { Team, Player, Match, TrainingSession } from "@/types";
 
 interface AppLayoutContext {
   teams: Team[];
-  setTeams: React.Dispatch<React.SetStateAction<Team[]>>;
+  setTeams: React.Dispatch<React.SetStateAction<Team[]>>; // Will be removed
   players: Player[];
   onAddPlayer: (player: Omit<Player, "id">) => void;
   matches: Match[];
   onAddMatch: (match: Omit<Match, "id">) => void;
-  trainingSessions: TrainingSession[]; // New context prop
-  onAddTrainingSession: (session: Omit<TrainingSession, "id">) => void; // New context prop
+  trainingSessions: TrainingSession[];
+  onAddTrainingSession: (session: Omit<TrainingSession, "id">) => void;
+  onCreateTeam: (teamName: string) => void; // New context prop
 }
 
 const DashboardPage: React.FC = () => {
-  const { teams, players, matches, trainingSessions } = useOutletContext<AppLayoutContext>(); // Destructure new context prop
+  const { teams, players, matches, trainingSessions } = useOutletContext<AppLayoutContext>();
 
   return (
     <div className="p-6">
@@ -31,7 +32,7 @@ const DashboardPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
         <TeamOverviewCard teams={teams} />
         <PlayerOverviewCard players={players} />
-        <TrainingOverviewCard trainingSessions={trainingSessions} /> {/* New card */}
+        <TrainingOverviewCard trainingSessions={trainingSessions} />
         <UpcomingMatchesCard matches={matches} teams={teams} />
       </div>
     </div>
