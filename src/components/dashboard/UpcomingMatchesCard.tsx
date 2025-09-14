@@ -4,7 +4,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays } from "lucide-react";
 import { Match, Team } from "@/types";
-import { format, parse } from "date-fns"; // Import parse from date-fns
+import { format, parse } from "date-fns";
 
 interface UpcomingMatchesCardProps {
   matches: Match[];
@@ -13,19 +13,26 @@ interface UpcomingMatchesCardProps {
 
 const UpcomingMatchesCard: React.FC<UpcomingMatchesCardProps> = ({ matches, teams }) => {
   const now = new Date(); // Capture current time once for consistent comparison
+  console.log("Current time (now):", now);
+  console.log("Raw matches data:", matches);
 
   const sortedMatches = [...matches].sort((a, b) => {
     // Use parse for robust date string parsing
     const dateA = parse(`${a.date} ${a.time}`, 'yyyy-MM-dd HH:mm', new Date());
     const dateB = parse(`${b.date} ${b.time}`, 'yyyy-MM-dd HH:mm', new Date());
+    console.log(`Match A (${a.opponent}): Raw=${a.date} ${a.time}, Parsed=${dateA}`);
+    console.log(`Match B (${b.opponent}): Raw=${b.date} ${b.time}, Parsed=${dateB}`);
     return dateA.getTime() - dateB.getTime();
   });
 
   const upcomingMatches = sortedMatches.filter(match => {
     // Use parse for robust date string parsing
     const matchDateTime = parse(`${match.date} ${match.time}`, 'yyyy-MM-dd HH:mm', new Date());
+    console.log(`Filtering match (${match.opponent}): Raw=${match.date} ${match.time}, Parsed=${matchDateTime}, Is future? ${matchDateTime > now}`);
     return matchDateTime > now; // Compare against the single 'now' timestamp
   }).slice(0, 3); // Show up to 3 upcoming matches
+
+  console.log("Upcoming matches after filter:", upcomingMatches);
 
   return (
     <Card>
