@@ -26,7 +26,7 @@ const App = () => {
   const [session, setSession] = React.useState<Session | null>(null);
   const [loadingAuth, setLoadingAuth] = React.useState(true);
   const [teams, setTeams] = React.useState<Team[]>([]);
-  const [players, setPlayers] = React.useState<Player[]>(([]);
+  const [players, setPlayers] = React.useState<Player[]>([]);
   const [matches, setMatches] = React.useState<Match[]>([]);
   const [trainingSessions, setTrainingSessions] = React.useState<TrainingSession[]>([]);
   const [loadingData, setLoadingData] = React.useState(false);
