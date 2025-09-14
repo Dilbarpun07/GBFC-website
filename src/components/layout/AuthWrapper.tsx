@@ -2,54 +2,30 @@
 
 import React from "react";
 import { useNavigate, Outlet } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
 
 interface AuthWrapperProps {
-  children: React.ReactNode;
+  session: Session | null;
 }
 
-const AuthWrapper: React.FC<AuthWrapperProps> = ({ children }) => {
-  const [session, setSession] = React.useState<Session | null>(null);
-  const [loading, setLoading] = React.useState(true);
+const AuthWrapper: React.FC<AuthWrapperProps> = ({ session }) => {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setLoading(false);
-      if (_event === 'SIGNED_OUT') {
-        navigate('/login');
-      } else if (session && _event === 'SIGNED_IN') {
+    if (!session) {
+      navigate('/login');
+    } else {
+      if (window.location.pathname === '/login') {
         navigate('/');
       }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Loading authentication...</p>
-      </div>
-    );
-  }
+    }
+  }, [session, navigate]);
 
   if (!session) {
-    // If no session, render the login page (handled by router)
-    return <Outlet />;
+    return null;
   }
 
-  // If session exists, render the protected content
-  return <>{children}</>;
+  return <Outlet />;
 };
 
 export default AuthWrapper;

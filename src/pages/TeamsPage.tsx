@@ -14,20 +14,11 @@ import { Label } from "@/components/ui/label";
 import TeamList from "@/components/teams/TeamList";
 import { Team, Player } from "@/types";
 import { toast } from "sonner";
-// import { useOutletContext } from "react-router-dom"; // No longer needed for setTeams
-
-// interface AppLayoutContext { // No longer needed
-//   teams: Team[];
-//   setTeams: React.Dispatch<React.SetStateAction<Team[]>>;
-//   onAddPlayer: (player: Omit<Player, "id">) => void;
-//   onCreateTeam: (teamName: string) => void;
-// }
 
 interface TeamsPageProps {
   teams: Team[];
-  // setTeams: React.Dispatch<React.SetStateAction<Team[]>>; // Removed
   onAddPlayer: (player: Omit<Player, "id">) => void;
-  onCreateTeam: (teamName: string) => void; // New prop
+  onCreateTeam: (teamName: string) => void;
 }
 
 const TeamsPage: React.FC<TeamsPageProps> = ({ teams, onAddPlayer, onCreateTeam }) => {
@@ -36,9 +27,9 @@ const TeamsPage: React.FC<TeamsPageProps> = ({ teams, onAddPlayer, onCreateTeam 
 
   const handleCreateTeam = async () => {
     if (teamName.trim()) {
-      await onCreateTeam(teamName.trim()); // Use the Supabase handler
-      setTeamName(""); // Clear input
-      setIsDialogOpen(false); // Close dialog
+      await onCreateTeam(teamName.trim());
+      setTeamName("");
+      setIsDialogOpen(false);
     } else {
       toast.error("Team name cannot be empty.");
     }

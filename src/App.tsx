@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -11,20 +13,40 @@ import PlayersPage from "./pages/PlayersPage";
 import SchedulePage from "./pages/SchedulePage";
 import TrainingPage from "./pages/TrainingPage";
 import NotFound from "./pages/NotFound";
-import Login from "./pages/Login"; // Import the new Login page
-import AuthWrapper from "./components/layout/AuthWrapper"; // Import the new AuthWrapper
+import Login from "./pages/Login";
+import AuthWrapper from "./components/layout/AuthWrapper";
 import { Team, Player, Match, TrainingSession } from "./types";
 import { supabase } from "./integrations/supabase/client";
 import { toast } from "sonner";
+import { Session } from "@supabase/supabase-js";
 
 const queryClient = new QueryClient();
 
 const App = () => {
+  const [session, setSession] = React.useState<Session | null>(null);
+  const [loadingAuth, setLoadingAuth] = React.useState(true);
   const [teams, setTeams] = React.useState<Team[]>([]);
   const [players, setPlayers] = React.useState<Player[]>([]);
   const [matches, setMatches] = React.useState<Match[]>([]);
   const [trainingSessions, setTrainingSessions] = React.useState<TrainingSession[]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const [loadingData, setLoadingData] = React.useState(false);
+
+  // --- Supabase Auth State Management ---
+  React.useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoadingAuth(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setLoadingAuth(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // --- Data Fetching from Supabase ---
   const fetchTeams = async () => {
@@ -32,9 +54,9 @@ const App = () => {
     if (error) {
       console.error("Error fetching teams:", error);
       toast.error("Failed to load teams.");
-    } else {
-      setTeams(data || []);
+      return [];
     }
+    return data || [];
   };
 
   const fetchPlayers = async () => {
@@ -42,9 +64,9 @@ const App = () => {
     if (error) {
       console.error("Error fetching players:", error);
       toast.error("Failed to load players.");
-    } else {
-      setPlayers(data || []);
+      return [];
     }
+    return data || [];
   };
 
   const fetchMatches = async () => {
@@ -52,9 +74,9 @@ const App = () => {
     if (error) {
       console.error("Error fetching matches:", error);
       toast.error("Failed to load matches.");
-    } else {
-      setMatches(data || []);
+      return [];
     }
+    return data || [];
   };
 
   const fetchTrainingSessions = async () => {
@@ -62,19 +84,36 @@ const App = () => {
     if (error) {
       console.error("Error fetching training sessions:", error);
       toast.error("Failed to load training sessions.");
-    } else {
-      setTrainingSessions(data || []);
+      return [];
     }
+    return data || [];
   };
 
   React.useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      await Promise.all([fetchTeams(), fetchPlayers(), fetchMatches(), fetchTrainingSessions()]);
-      setLoading(false);
+    const loadAllData = async () => {
+      if (session) {
+        setLoadingData(true);
+        const [teamsData, playersData, matchesData, trainingSessionsData] = await Promise.all([
+          fetchTeams(),
+          fetchPlayers(),
+          fetchMatches(),
+          fetchTrainingSessions(),
+        ]);
+        setTeams(teamsData);
+        setPlayers(playersData);
+        setMatches(matchesData);
+        setTrainingSessions(trainingSessionsData);
+        setLoadingData(false);
+      } else {
+        // Clear data if no session
+        setTeams([]);
+        setPlayers([]);
+        setMatches([]);
+        setTrainingSessions([]);
+      }
     };
-    loadData();
-  }, []);
+    loadAllData();
+  }, [session]);
 
   // --- Handlers for adding/updating data via Supabase ---
   const handleCreateTeam = async (teamName: string) => {
@@ -84,7 +123,7 @@ const App = () => {
       toast.error("Failed to create team.");
     } else {
       toast.success("Team created successfully!");
-      fetchTeams(); // Re-fetch teams to update state
+      fetchTeams().then(setTeams);
     }
   };
 
@@ -95,7 +134,7 @@ const App = () => {
       toast.error("Failed to add player.");
     } else {
       toast.success("Player added successfully!");
-      fetchPlayers(); // Re-fetch players to update state
+      fetchPlayers().then(setPlayers);
     }
   };
 
@@ -106,7 +145,7 @@ const App = () => {
       toast.error("Failed to add match.");
     } else {
       toast.success("Match added successfully!");
-      fetchMatches(); // Re-fetch matches to update state
+      fetchMatches().then(setMatches);
     }
   };
 
@@ -117,7 +156,7 @@ const App = () => {
       toast.error("Failed to add training session.");
     } else {
       toast.success("Training session added successfully!");
-      fetchTrainingSessions(); // Re-fetch training sessions
+      fetchTrainingSessions().then(setTrainingSessions);
 
       // Update players' training attendance
       for (const playerId of newSession.attendedPlayerIds) {
@@ -132,14 +171,14 @@ const App = () => {
           }
         }
       }
-      fetchPlayers(); // Re-fetch players to update their stats
+      fetchPlayers().then(setPlayers);
     }
   };
 
-  if (loading) {
+  if (loadingAuth || loadingData) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p>Loading data...</p>
+        <p>Loading...</p>
       </div>
     );
   }
@@ -152,20 +191,19 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route element={<AuthWrapper />}> {/* Protect routes with AuthWrapper */}
+            <Route element={<AuthWrapper session={session} />}>
               <Route
                 path="/"
                 element={
                   <AppLayout
                     teams={teams}
-                    setTeams={setTeams} // This will be replaced by handleCreateTeam in TeamsPage
                     players={players}
                     onAddPlayer={handleAddPlayer}
                     matches={matches}
                     onAddMatch={handleAddMatch}
                     trainingSessions={trainingSessions}
                     onAddTrainingSession={handleAddTrainingSession}
-                    onCreateTeam={handleCreateTeam} // Pass new team creation handler
+                    onCreateTeam={handleCreateTeam}
                   />
                 }
               >
@@ -175,9 +213,8 @@ const App = () => {
                   element={
                     <TeamsPage
                       teams={teams}
-                      setTeams={setTeams} // This will be replaced by onCreateTeam
                       onAddPlayer={handleAddPlayer}
-                      onCreateTeam={handleCreateTeam} // Pass new team creation handler
+                      onCreateTeam={handleCreateTeam}
                     />
                   }
                 />

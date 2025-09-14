@@ -10,14 +10,13 @@ import { Team, Player, Match, TrainingSession } from "@/types";
 
 interface AppLayoutContext {
   teams: Team[];
-  // setTeams: React.Dispatch<React.SetStateAction<Team[]>>; // Removed
   players: Player[];
   onAddPlayer: (player: Omit<Player, "id">) => void;
   matches: Match[];
   onAddMatch: (match: Omit<Match, "id">) => void;
   trainingSessions: TrainingSession[];
   onAddTrainingSession: (session: Omit<TrainingSession, "id">) => void;
-  onCreateTeam: (teamName: string) => void; // New context prop
+  onCreateTeam: (teamName: string) => void;
 }
 
 const DashboardPage: React.FC = () => {

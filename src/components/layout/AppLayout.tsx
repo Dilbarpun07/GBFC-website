@@ -14,26 +14,24 @@ import { Team, Player, Match, TrainingSession } from "@/types";
 
 interface AppLayoutProps {
   teams: Team[];
-  // setTeams: React.Dispatch<React.SetStateAction<Team[]>>; // Removed
   players: Player[];
   onAddPlayer: (player: Omit<Player, "id">) => void;
   matches: Match[];
   onAddMatch: (match: Omit<Match, "id">) => void;
   trainingSessions: TrainingSession[];
   onAddTrainingSession: (session: Omit<TrainingSession, "id">) => void;
-  onCreateTeam: (teamName: string) => void; // New prop for creating teams
+  onCreateTeam: (teamName: string) => void;
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({
   teams,
-  // setTeams, // Removed
   players,
   onAddPlayer,
   matches,
   onAddMatch,
   trainingSessions,
   onAddTrainingSession,
-  onCreateTeam, // Destructure new prop
+  onCreateTeam,
 }) => {
   const isMobile = useIsMobile();
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
@@ -68,14 +66,13 @@ const AppLayout: React.FC<AppLayoutProps> = ({
           <Outlet
             context={{
               teams,
-              // setTeams, // Removed from context
               players,
               onAddPlayer,
               matches,
               onAddMatch,
               trainingSessions,
               onAddTrainingSession,
-              onCreateTeam, // Pass to context
+              onCreateTeam,
             }}
           />
         </main>
@@ -124,14 +121,13 @@ const AppLayout: React.FC<AppLayoutProps> = ({
             <Outlet
               context={{
                 teams,
-                // setTeams, // Removed from context
                 players,
                 onAddPlayer,
                 matches,
                 onAddMatch,
                 trainingSessions,
                 onAddTrainingSession,
-                onCreateTeam, // Pass to context
+                onCreateTeam,
               }}
             />
           </main>
