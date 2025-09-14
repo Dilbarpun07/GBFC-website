@@ -122,28 +122,48 @@ const App = () => {
       console.error("Error creating team:", error);
       toast.error("Failed to create team.");
     } else {
+      console.log("Team created successfully, Supabase response:", data);
       toast.success("Team created successfully!");
       fetchTeams().then(setTeams);
     }
   };
 
   const handleAddPlayer = async (newPlayer: Omit<Player, "id">) => {
-    const { data, error } = await supabase.from("players").insert(newPlayer).select();
+    // Map to snake_case for Supabase insert
+    const playerToInsert = {
+      name: newPlayer.name,
+      team_id: newPlayer.teamId,
+      matches_played: newPlayer.matchesPlayed,
+      trainings_attended: newPlayer.trainingsAttended,
+      goals: newPlayer.goals,
+      assists: newPlayer.assists,
+    };
+    const { data, error } = await supabase.from("players").insert(playerToInsert).select();
     if (error) {
       console.error("Error adding player:", error);
       toast.error("Failed to add player.");
     } else {
+      console.log("Player added successfully, Supabase response:", data);
       toast.success("Player added successfully!");
       fetchPlayers().then(setPlayers);
     }
   };
 
   const handleAddMatch = async (newMatch: Omit<Match, "id">) => {
-    const { data, error } = await supabase.from("matches").insert(newMatch).select();
+    // Map to snake_case for Supabase insert
+    const matchToInsert = {
+      team_id: newMatch.teamId,
+      opponent: newMatch.opponent,
+      date: newMatch.date,
+      time: newMatch.time,
+      location: newMatch.location,
+    };
+    const { data, error } = await supabase.from("matches").insert(matchToInsert).select();
     if (error) {
       console.error("Error adding match:", error);
       toast.error("Failed to add match.");
     } else {
+      console.log("Match added successfully, Supabase response:", data);
       toast.success("Match added successfully!");
       fetchMatches().then(setMatches);
     }
