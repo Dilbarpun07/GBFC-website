@@ -26,7 +26,7 @@ const App = () => {
   const [session, setSession] = React.useState<Session | null>(null);
   const [loadingAuth, setLoadingAuth] = React.useState(true);
   const [teams, setTeams] = React.useState<Team[]>([]);
-  const [players, setPlayers] = React.useState<Player[]>([]);
+  const [players, setPlayers] = React.useState<Player[]>(([]);
   const [matches, setMatches] = React.useState<Match[]>([]);
   const [trainingSessions, setTrainingSessions] = React.useState<TrainingSession[]>([]);
   const [loadingData, setLoadingData] = React.useState(false);
@@ -66,7 +66,16 @@ const App = () => {
       toast.error("Failed to load players.");
       return [];
     }
-    return data || [];
+    // Map snake_case from Supabase to camelCase for the Player interface
+    return (data || []).map((player: any) => ({
+      id: player.id,
+      name: player.name,
+      teamId: player.team_id,
+      matchesPlayed: player.matches_played,
+      trainingsAttended: player.trainings_attended,
+      goals: player.goals,
+      assists: player.assists,
+    }));
   };
 
   const fetchMatches = async () => {
@@ -76,7 +85,15 @@ const App = () => {
       toast.error("Failed to load matches.");
       return [];
     }
-    return data || [];
+    // Map snake_case from Supabase to camelCase for the Match interface
+    return (data || []).map((match: any) => ({
+      id: match.id,
+      teamId: match.team_id,
+      opponent: match.opponent,
+      date: match.date,
+      time: match.time,
+      location: match.location,
+    }));
   };
 
   const fetchTrainingSessions = async () => {
@@ -86,7 +103,13 @@ const App = () => {
       toast.error("Failed to load training sessions.");
       return [];
     }
-    return data || [];
+    // Map snake_case from Supabase to camelCase for the TrainingSession interface
+    return (data || []).map((session: any) => ({
+      id: session.id,
+      teamId: session.team_id,
+      date: session.date,
+      attendedPlayerIds: session.attended_player_ids,
+    }));
   };
 
   React.useEffect(() => {
@@ -122,7 +145,6 @@ const App = () => {
       console.error("Error creating team:", error);
       toast.error("Failed to create team.");
     } else {
-      console.log("Team created successfully, Supabase response:", data);
       toast.success("Team created successfully!");
       fetchTeams().then(setTeams);
     }
@@ -143,7 +165,6 @@ const App = () => {
       console.error("Error adding player:", error);
       toast.error("Failed to add player.");
     } else {
-      console.log("Player added successfully, Supabase response:", data);
       toast.success("Player added successfully!");
       fetchPlayers().then(setPlayers);
     }
@@ -163,14 +184,19 @@ const App = () => {
       console.error("Error adding match:", error);
       toast.error("Failed to add match.");
     } else {
-      console.log("Match added successfully, Supabase response:", data);
       toast.success("Match added successfully!");
       fetchMatches().then(setMatches);
     }
   };
 
   const handleAddTrainingSession = async (newSession: Omit<TrainingSession, "id">) => {
-    const { data, error } = await supabase.from("training_sessions").insert(newSession).select();
+    // Map to snake_case for Supabase insert
+    const sessionToInsert = {
+      team_id: newSession.teamId,
+      date: newSession.date,
+      attended_player_ids: newSession.attendedPlayerIds,
+    };
+    const { data, error } = await supabase.from("training_sessions").insert(sessionToInsert).select();
     if (error) {
       console.error("Error adding training session:", error);
       toast.error("Failed to add training session.");
