@@ -10,7 +10,7 @@ import Sidebar from "./Sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { MadeWithDyad } from "@/components/made-with-dyad";
-import { Team, Player, Match } from "@/types";
+import { Team, Player, Match, TrainingSession } from "@/types"; // Updated import
 
 interface AppLayoutProps {
   teams: Team[];
@@ -19,6 +19,8 @@ interface AppLayoutProps {
   onAddPlayer: (player: Omit<Player, "id">) => void;
   matches: Match[];
   onAddMatch: (match: Omit<Match, "id">) => void;
+  trainingSessions: TrainingSession[]; // New prop
+  onAddTrainingSession: (session: Omit<TrainingSession, "id">) => void; // New prop
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({
@@ -28,6 +30,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   onAddPlayer,
   matches,
   onAddMatch,
+  trainingSessions, // Destructure new prop
+  onAddTrainingSession, // Destructure new prop
 }) => {
   const isMobile = useIsMobile();
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
@@ -60,7 +64,16 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         </Sheet>
         <main className="flex-1 overflow-auto">
           <Outlet
-            context={{ teams, setTeams, players, onAddPlayer, matches, onAddMatch }}
+            context={{
+              teams,
+              setTeams,
+              players,
+              onAddPlayer,
+              matches,
+              onAddMatch,
+              trainingSessions, // Pass to context
+              onAddTrainingSession, // Pass to context
+            }}
           />
         </main>
       </div>
@@ -106,7 +119,16 @@ const AppLayout: React.FC<AppLayoutProps> = ({
           <Header />
           <main className="flex-1 overflow-auto">
             <Outlet
-              context={{ teams, setTeams, players, onAddPlayer, matches, onAddMatch }}
+              context={{
+                teams,
+                setTeams,
+                players,
+                onAddPlayer,
+                matches,
+                onAddMatch,
+                trainingSessions, // Pass to context
+                onAddTrainingSession, // Pass to context
+              }}
             />
           </main>
         </div>

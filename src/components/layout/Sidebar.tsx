@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Users, Shirt, CalendarDays } from "lucide-react";
+import { LayoutDashboard, Users, Shirt, CalendarDays, Dumbbell } from "lucide-react"; // Added Dumbbell icon
 
 interface SidebarProps {
   isCollapsed?: boolean;
@@ -27,6 +27,11 @@ const navItems = [
     name: "Schedule",
     href: "/schedule",
     icon: CalendarDays,
+  },
+  {
+    name: "Training", // New navigation item
+    href: "/training",
+    icon: Dumbbell, // New icon
   },
 ];
 

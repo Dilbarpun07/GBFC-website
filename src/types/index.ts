@@ -21,3 +21,10 @@ export interface Match {
   time: string;
   location: string;
 }
+
+export interface TrainingSession {
+  id: string;
+  teamId: string;
+  date: string;
+  attendedPlayerIds: string[];
+}
