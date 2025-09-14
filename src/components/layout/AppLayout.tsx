@@ -8,10 +8,27 @@ import {
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { MadeWithDyad } from "@/components/made-with-dyad";
+import { Team, Player, Match } from "@/types";
 
-const AppLayout: React.FC = () => {
+interface AppLayoutProps {
+  teams: Team[];
+  setTeams: React.Dispatch<React.SetStateAction<Team[]>>;
+  players: Player[];
+  onAddPlayer: (player: Omit<Player, "id">) => void;
+  matches: Match[];
+  onAddMatch: (match: Omit<Match, "id">) => void;
+}
+
+const AppLayout: React.FC<AppLayoutProps> = ({
+  teams,
+  setTeams,
+  players,
+  onAddPlayer,
+  matches,
+  onAddMatch,
+}) => {
   const isMobile = useIsMobile();
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
@@ -42,7 +59,9 @@ const AppLayout: React.FC = () => {
           </SheetContent>
         </Sheet>
         <main className="flex-1 overflow-auto">
-          <Outlet />
+          <Outlet
+            context={{ teams, setTeams, players, onAddPlayer, matches, onAddMatch }}
+          />
         </main>
       </div>
     );
@@ -60,7 +79,11 @@ const AppLayout: React.FC = () => {
         collapsedSize={4}
         collapsible={true}
         onCollapse={(collapsed) => handleSidebarCollapse(collapsed)}
-        className={isSidebarCollapsed ? "min-w-[50px] transition-all duration-300 ease-in-out" : "min-w-[200px]"}
+        className={
+          isSidebarCollapsed
+            ? "min-w-[50px] transition-all duration-300 ease-in-out"
+            : "min-w-[200px]"
+        }
       >
         <div className="flex flex-col h-full">
           <div className="p-4 border-b">
@@ -82,7 +105,9 @@ const AppLayout: React.FC = () => {
         <div className="flex flex-col h-full">
           <Header />
           <main className="flex-1 overflow-auto">
-            <Outlet />
+            <Outlet
+              context={{ teams, setTeams, players, onAddPlayer, matches, onAddMatch }}
+            />
           </main>
         </div>
       </ResizablePanel>

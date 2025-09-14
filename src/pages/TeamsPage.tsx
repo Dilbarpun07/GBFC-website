@@ -7,20 +7,23 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import TeamList from "@/components/teams/TeamList";
+import { Team, Player } from "@/types";
+import { toast } from "sonner";
 
-interface Team {
-  id: string;
-  name: string;
+interface TeamsPageProps {
+  teams: Team[];
+  setTeams: React.Dispatch<React.SetStateAction<Team[]>>;
+  onAddPlayer: (player: Omit<Player, "id">) => void;
 }
 
-const TeamsPage: React.FC = () => {
+const TeamsPage: React.FC<TeamsPageProps> = ({ teams, setTeams, onAddPlayer }) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [teamName, setTeamName] = React.useState("");
-  const [teams, setTeams] = React.useState<Team[]>([]);
 
   const handleCreateTeam = () => {
     if (teamName.trim()) {
@@ -31,6 +34,9 @@ const TeamsPage: React.FC = () => {
       setTeams((prevTeams) => [...prevTeams, newTeam]);
       setTeamName(""); // Clear input
       setIsDialogOpen(false); // Close dialog
+      toast.success("Team created successfully!");
+    } else {
+      toast.error("Team name cannot be empty.");
     }
   };
 
@@ -66,17 +72,17 @@ const TeamsPage: React.FC = () => {
               />
             </div>
           </div>
-          <div className="flex justify-end">
+          <DialogFooter>
             <Button type="submit" onClick={handleCreateTeam}>
               Create Team
             </Button>
-          </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
       <div className="mt-8">
         <h2 className="text-2xl font-semibold mb-4">Your Teams</h2>
-        <TeamList teams={teams} />
+        <TeamList teams={teams} onAddPlayer={onAddPlayer} />
       </div>
     </div>
   );
