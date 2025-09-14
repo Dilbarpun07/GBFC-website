@@ -4,7 +4,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays } from "lucide-react";
 import { Match, Team } from "@/types";
-import { format } from "date-fns";
+import { format, parse } from "date-fns"; // Import parse from date-fns
 
 interface UpcomingMatchesCardProps {
   matches: Match[];
@@ -12,15 +12,19 @@ interface UpcomingMatchesCardProps {
 }
 
 const UpcomingMatchesCard: React.FC<UpcomingMatchesCardProps> = ({ matches, teams }) => {
+  const now = new Date(); // Capture current time once for consistent comparison
+
   const sortedMatches = [...matches].sort((a, b) => {
-    const dateA = new Date(`${a.date} ${a.time}`);
-    const dateB = new Date(`${b.date} ${b.time}`);
+    // Use parse for robust date string parsing
+    const dateA = parse(`${a.date} ${a.time}`, 'yyyy-MM-dd HH:mm', new Date());
+    const dateB = parse(`${b.date} ${b.time}`, 'yyyy-MM-dd HH:mm', new Date());
     return dateA.getTime() - dateB.getTime();
   });
 
   const upcomingMatches = sortedMatches.filter(match => {
-    const matchDateTime = new Date(`${match.date} ${match.time}`);
-    return matchDateTime > new Date();
+    // Use parse for robust date string parsing
+    const matchDateTime = parse(`${match.date} ${match.time}`, 'yyyy-MM-dd HH:mm', new Date());
+    return matchDateTime > now; // Compare against the single 'now' timestamp
   }).slice(0, 3); // Show up to 3 upcoming matches
 
   return (
@@ -42,7 +46,7 @@ const UpcomingMatchesCard: React.FC<UpcomingMatchesCardProps> = ({ matches, team
                     {team?.name} vs {match.opponent}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {format(new Date(`${match.date} ${match.time}`), "MMM d, yyyy 'at' h:mm a")} - {match.location}
+                    {format(parse(`${match.date} ${match.time}`, 'yyyy-MM-dd HH:mm', new Date()), "MMM d, yyyy 'at' h:mm a")} - {match.location}
                   </p>
                 </div>
               );
