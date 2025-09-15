@@ -16,8 +16,10 @@ interface AppLayoutProps {
   teams: Team[];
   players: Player[];
   onAddPlayer: (player: Omit<Player, "id">) => void;
+  onEditPlayer: (playerId: string, updatedPlayer: Partial<Omit<Player, "id">>) => void;
   matches: Match[];
   onAddMatch: (match: Omit<Match, "id">) => void;
+  onEditMatch: (matchId: string, updatedMatch: Partial<Omit<Match, "id">>) => void; // Added onEditMatch prop
   trainingSessions: TrainingSession[];
   onAddTrainingSession: (session: Omit<TrainingSession, "id">) => void;
   onEditTrainingSession: (
@@ -26,7 +28,7 @@ interface AppLayoutProps {
   ) => void;
   onCreateTeam: (teamName: string) => void;
   onDeleteTeam: (teamId: string) => void;
-  onEditTeam: (teamId: string, newName: string) => void; // Added onEditTeam prop
+  onEditTeam: (teamId: string, newName: string) => void;
   onDeletePlayer: (playerId: string) => void;
   onDeleteMatch: (matchId: string) => void;
   onDeleteTrainingSession: (sessionId: string) => void;
@@ -36,14 +38,16 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   teams,
   players,
   onAddPlayer,
+  onEditPlayer,
   matches,
   onAddMatch,
+  onEditMatch, // Destructure new prop
   trainingSessions,
   onAddTrainingSession,
   onEditTrainingSession,
   onCreateTeam,
   onDeleteTeam,
-  onEditTeam, // Destructure new prop
+  onEditTeam,
   onDeletePlayer,
   onDeleteMatch,
   onDeleteTrainingSession,
@@ -83,14 +87,16 @@ const AppLayout: React.FC<AppLayoutProps> = ({
               teams,
               players,
               onAddPlayer,
+              onEditPlayer,
               matches,
               onAddMatch,
+              onEditMatch, // Pass new prop to context
               trainingSessions,
               onAddTrainingSession,
               onEditTrainingSession,
               onCreateTeam,
               onDeleteTeam,
-              onEditTeam, // Pass new prop to context
+              onEditTeam,
               onDeletePlayer,
               onDeleteMatch,
               onDeleteTrainingSession,
@@ -144,14 +150,16 @@ const AppLayout: React.FC<AppLayoutProps> = ({
                 teams,
                 players,
                 onAddPlayer,
+                onEditPlayer,
                 matches,
                 onAddMatch,
+                onEditMatch, // Pass new prop to context
                 trainingSessions,
                 onAddTrainingSession,
                 onEditTrainingSession,
                 onCreateTeam,
                 onDeleteTeam,
-                onEditTeam, // Pass new prop to context
+                onEditTeam,
                 onDeletePlayer,
                 onDeleteMatch,
                 onDeleteTrainingSession,

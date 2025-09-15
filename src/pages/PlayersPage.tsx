@@ -6,9 +6,10 @@ interface PlayersPageProps {
   players: Player[];
   teams: Team[];
   onDeletePlayer: (playerId: string) => void;
+  onEditPlayer: (playerId: string, updatedPlayer: Partial<Omit<Player, "id">>) => void; // Added onEditPlayer prop
 }
 
-const PlayersPage: React.FC<PlayersPageProps> = ({ players, teams, onDeletePlayer }) => {
+const PlayersPage: React.FC<PlayersPageProps> = ({ players, teams, onDeletePlayer, onEditPlayer }) => {
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6">Players</h1>
@@ -17,7 +18,12 @@ const PlayersPage: React.FC<PlayersPageProps> = ({ players, teams, onDeletePlaye
       </p>
 
       <div className="mt-8">
-        <PlayerList players={players} teams={teams} onDeletePlayer={onDeletePlayer} />
+        <PlayerList
+          players={players}
+          teams={teams}
+          onDeletePlayer={onDeletePlayer}
+          onEditPlayer={onEditPlayer} // Pass onEditPlayer to PlayerList
+        />
       </div>
     </div>
   );

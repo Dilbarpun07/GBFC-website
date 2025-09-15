@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Match, Team } from "@/types";
 import { toast } from "sonner";
-import { CalendarIcon, Trash2 } from "lucide-react";
+import { CalendarIcon, Trash2, Pencil } from "lucide-react"; // Added Pencil icon
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
@@ -30,16 +30,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import EditMatchDialog from "@/components/schedule/EditMatchDialog"; // Import the new dialog
 
 interface SchedulePageProps {
   matches: Match[];
   teams: Team[];
   onAddMatch: (match: Omit<Match, "id">) => void;
   onDeleteMatch: (matchId: string) => void;
+  onEditMatch: (matchId: string, updatedMatch: Partial<Omit<Match, "id">>) => void; // Added onEditMatch prop
 }
 
-const SchedulePage: React.FC<SchedulePageProps> = ({ matches, teams, onAddMatch, onDeleteMatch }) => {
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+const SchedulePage: React.FC<SchedulePageProps> = ({ matches, teams, onAddMatch, onDeleteMatch, onEditMatch }) => {
+  const [isAddMatchDialogOpen, setIsAddMatchDialogOpen] = React.useState(false);
+  const [isEditMatchDialogOpen, setIsEditMatchDialogOpen] = React.useState(false);
+  const [matchToEdit, setMatchToEdit] = React.useState<Match | null>(null);
+
   const [opponent, setOpponent] = React.useState("");
   const [selectedTeamId, setSelectedTeamId] = React.useState("");
   const [date, setDate] = React.useState<Date | undefined>(undefined);
@@ -60,10 +65,15 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ matches, teams, onAddMatch,
       setDate(undefined);
       setTime("");
       setLocation("");
-      setIsDialogOpen(false);
+      setIsAddMatchDialogOpen(false);
     } else {
       toast.error("Please fill in all match details.");
     }
+  };
+
+  const openEditDialog = (match: Match) => {
+    setMatchToEdit(match);
+    setIsEditMatchDialogOpen(true);
   };
 
   return (
@@ -73,7 +83,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ matches, teams, onAddMatch,
         Organize and view your team's game and practice schedules.
       </p>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isAddMatchDialogOpen} onOpenChange={setIsAddMatchDialogOpen}>
         <DialogTrigger asChild>
           <Button>Add New Match</Button>
         </DialogTrigger>
@@ -191,33 +201,52 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ matches, teams, onAddMatch,
                     </p>
                     <p className="text-sm text-muted-foreground">{match.location}</p>
                   </div>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will permanently delete the match "{team?.name} vs {match.opponent}" on {match.date}.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => onDeleteMatch(match.id)}>
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-muted-foreground hover:text-primary"
+                      onClick={() => openEditDialog(match)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the match "{team?.name} vs {match.opponent}" on {match.date}.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => onDeleteMatch(match.id)}>
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
               );
             })}
           </div>
         )}
       </div>
+      {matchToEdit && (
+        <EditMatchDialog
+          isOpen={isEditMatchDialogOpen}
+          onOpenChange={setIsEditMatchDialogOpen}
+          matchToEdit={matchToEdit}
+          teams={teams}
+          onEditMatch={onEditMatch}
+        />
+      )}
     </div>
   );
 };

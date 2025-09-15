@@ -12,8 +12,10 @@ interface AppLayoutContext {
   teams: Team[];
   players: Player[];
   onAddPlayer: (player: Omit<Player, "id">) => void;
+  onEditPlayer: (playerId: string, updatedPlayer: Partial<Omit<Player, "id">>) => void;
   matches: Match[];
   onAddMatch: (match: Omit<Match, "id">) => void;
+  onEditMatch: (matchId: string, updatedMatch: Partial<Omit<Match, "id">>) => void; // Added onEditMatch to context
   trainingSessions: TrainingSession[];
   onAddTrainingSession: (session: Omit<TrainingSession, "id">) => void;
   onEditTrainingSession: (
@@ -22,7 +24,7 @@ interface AppLayoutContext {
   ) => void;
   onCreateTeam: (teamName: string) => void;
   onDeleteTeam: (teamId: string) => void;
-  onEditTeam: (teamId: string, newName: string) => void; // Added onEditTeam to context
+  onEditTeam: (teamId: string, newName: string) => void;
   onDeletePlayer: (playerId: string) => void;
   onDeleteMatch: (matchId: string) => void;
   onDeleteTrainingSession: (sessionId: string) => void;

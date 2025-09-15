@@ -201,6 +201,25 @@ const App = () => {
     }
   };
 
+  const handleEditPlayer = async (playerId: string, updatedPlayer: Partial<Omit<Player, "id">>) => {
+    const playerToUpdate = {
+      name: updatedPlayer.name,
+      team_id: updatedPlayer.teamId,
+      matches_played: updatedPlayer.matchesPlayed,
+      trainings_attended: updatedPlayer.trainingsAttended,
+      goals: updatedPlayer.goals,
+      assists: updatedPlayer.assists,
+    };
+    const { error } = await supabase.from("players").update(playerToUpdate).eq("id", playerId);
+    if (error) {
+      console.error("Error updating player:", error);
+      toast.error("Failed to update player.");
+    } else {
+      toast.success("Player updated successfully!");
+      fetchPlayers().then(setPlayers);
+    }
+  };
+
   const handleAddMatch = async (newMatch: Omit<Match, "id">) => {
     // Map to snake_case for Supabase insert
     const matchToInsert = {
@@ -216,6 +235,24 @@ const App = () => {
       toast.error("Failed to add match.");
     } else {
       toast.success("Match added successfully!");
+      fetchMatches().then(setMatches);
+    }
+  };
+
+  const handleEditMatch = async (matchId: string, updatedMatch: Partial<Omit<Match, "id">>) => {
+    const matchToUpdate = {
+      team_id: updatedMatch.teamId,
+      opponent: updatedMatch.opponent,
+      date: updatedMatch.date,
+      time: updatedMatch.time,
+      location: updatedMatch.location,
+    };
+    const { error } = await supabase.from("matches").update(matchToUpdate).eq("id", matchId);
+    if (error) {
+      console.error("Error updating match:", error);
+      toast.error("Failed to update match.");
+    } else {
+      toast.success("Match updated successfully!");
       fetchMatches().then(setMatches);
     }
   };
@@ -403,14 +440,16 @@ const App = () => {
                         teams={teams}
                         players={players}
                         onAddPlayer={handleAddPlayer}
+                        onEditPlayer={handleEditPlayer}
                         matches={matches}
                         onAddMatch={handleAddMatch}
+                        onEditMatch={handleEditMatch} // Pass new handler
                         trainingSessions={trainingSessions}
                         onAddTrainingSession={handleAddTrainingSession}
                         onEditTrainingSession={handleEditTrainingSession}
                         onCreateTeam={handleCreateTeam}
                         onDeleteTeam={handleDeleteTeam}
-                        onEditTeam={handleEditTeam} // Pass new handler
+                        onEditTeam={handleEditTeam}
                         onDeletePlayer={handleDeletePlayer}
                         onDeleteMatch={handleDeleteMatch}
                         onDeleteTrainingSession={handleDeleteTrainingSession}
@@ -427,17 +466,17 @@ const App = () => {
                         onAddPlayer={handleAddPlayer}
                         onCreateTeam={handleCreateTeam}
                         onDeleteTeam={handleDeleteTeam}
-                        onEditTeam={handleEditTeam} // Pass new handler
+                        onEditTeam={handleEditTeam}
                       />
                     }
                   />
                   <Route
                     path="players"
-                    element={<PlayersPage players={players} teams={teams} onDeletePlayer={handleDeletePlayer} />}
+                    element={<PlayersPage players={players} teams={teams} onDeletePlayer={handleDeletePlayer} onEditPlayer={handleEditPlayer} />}
                   />
                   <Route
                     path="schedule"
-                    element={<SchedulePage matches={matches} teams={teams} onAddMatch={handleAddMatch} onDeleteMatch={handleDeleteMatch} />}
+                    element={<SchedulePage matches={matches} teams={teams} onAddMatch={handleAddMatch} onDeleteMatch={handleDeleteMatch} onEditMatch={handleEditMatch} />}
                   />
                   <Route
                     path="training"

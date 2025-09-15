@@ -1,14 +1,15 @@
 import React from "react";
 import PlayerCard from "./PlayerCard";
-import { Player } from "@/types";
+import { Player, Team } from "@/types";
 
 interface PlayerListProps {
   players: Player[];
-  teams: { id: string; name: string }[]; // To display team name
+  teams: Team[]; // To display team name and pass to EditPlayerDialog
   onDeletePlayer: (playerId: string) => void;
+  onEditPlayer: (playerId: string, updatedPlayer: Partial<Omit<Player, "id">>) => void; // Added onEditPlayer prop
 }
 
-const PlayerList: React.FC<PlayerListProps> = ({ players, teams, onDeletePlayer }) => {
+const PlayerList: React.FC<PlayerListProps> = ({ players, teams, onDeletePlayer, onEditPlayer }) => {
   if (players.length === 0) {
     return (
       <p className="text-muted-foreground">No players added yet. Add one from a team!</p>
@@ -35,7 +36,13 @@ const PlayerList: React.FC<PlayerListProps> = ({ players, teams, onDeletePlayer 
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {playersByTeam[teamId].map((player) => (
-                <PlayerCard key={player.id} player={player} onDeletePlayer={onDeletePlayer} />
+                <PlayerCard
+                  key={player.id}
+                  player={player}
+                  teams={teams} // Pass teams to PlayerCard
+                  onDeletePlayer={onDeletePlayer}
+                  onEditPlayer={onEditPlayer} // Pass onEditPlayer to PlayerCard
+                />
               ))}
             </div>
           </div>
