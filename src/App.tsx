@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom"; // Removed useNavigate
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "./components/layout/AppLayout";
 import DashboardPage from "./pages/DashboardPage";
 import TeamsPage from "./pages/TeamsPage";
@@ -15,7 +15,7 @@ import TrainingPage from "./pages/TrainingPage";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import AuthWrapper from "./components/layout/AuthWrapper";
-import AuthHandler from "./components/auth/AuthHandler"; // Import AuthHandler
+import AuthHandler from "./components/auth/AuthHandler";
 import { Team, Player, Match, TrainingSession } from "./types";
 import { supabase } from "./integrations/supabase/client";
 import { toast } from "sonner";
@@ -31,6 +31,8 @@ const App = () => {
   const [matches, setMatches] = React.useState<Match[]>([]);
   const [trainingSessions, setTrainingSessions] = React.useState<TrainingSession[]>([]);
   const [loadingData, setLoadingData] = React.useState(false);
+
+  console.log("App render: loadingAuth =", loadingAuth, ", loadingData =", loadingData);
 
   // --- Data Fetching from Supabase ---
   const fetchTeams = async () => {
@@ -103,25 +105,40 @@ const App = () => {
 
   React.useEffect(() => {
     const loadAllData = async () => {
+      console.log("loadAllData called. Current session:", session);
       if (session) {
         setLoadingData(true);
-        const [teamsData, playersData, matchesData, trainingSessionsData] = await Promise.all([
-          fetchTeams(),
-          fetchPlayers(),
-          fetchMatches(),
-          fetchTrainingSessions(),
-        ]);
-        setTeams(teamsData);
-        setPlayers(playersData);
-        setMatches(matchesData);
-        setTrainingSessions(trainingSessionsData);
-        setLoadingData(false);
+        console.log("setLoadingData(true) in loadAllData. loadingData now:", true);
+        try {
+          const [teamsData, playersData, matchesData, trainingSessionsData] = await Promise.all([
+            fetchTeams(),
+            fetchPlayers(),
+            fetchMatches(),
+            fetchTrainingSessions(),
+          ]);
+          setTeams(teamsData);
+          setPlayers(playersData);
+          setMatches(matchesData);
+          setTrainingSessions(trainingSessionsData);
+          console.log("Data fetched successfully.");
+        } catch (error) {
+          console.error("Error during Promise.all data fetch:", error);
+          toast.error("An error occurred while fetching initial data.");
+        } finally {
+          setLoadingData(false);
+          console.log("setLoadingData(false) in loadAllData. loadingData now:", false);
+        }
       } else {
-        // Clear data if no session
+        console.log("No session in loadAllData, clearing data.");
         setTeams([]);
         setPlayers([]);
         setMatches([]);
         setTrainingSessions([]);
+        // Ensure loadingData is false if it somehow got stuck true
+        if (loadingData) {
+          setLoadingData(false);
+          console.log("setLoadingData(false) in loadAllData (no session). loadingData now:", false);
+        }
       }
     };
     loadAllData();
@@ -267,6 +284,7 @@ const App = () => {
 
 
   if (loadingAuth || loadingData) {
+    console.log("Showing loading screen. loadingAuth:", loadingAuth, "loadingData:", loadingData);
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p>Loading...</p>
@@ -280,7 +298,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <AuthHandler setSession={setSession} setLoadingAuth={setLoadingAuth} /> {/* Render AuthHandler here */}
+          <AuthHandler setSession={setSession} setLoadingAuth={setLoadingAuth} />
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route element={<AuthWrapper session={session} />}>
