@@ -32,7 +32,7 @@ const Login: React.FC = () => {
             },
           }}
           theme="light"
-          redirectTo="/" // Changed to relative path for better React Router integration
+          // Removed redirectTo prop to allow client-side navigation to handle redirects
           view="sign_in"
         />
       </div>

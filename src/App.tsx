@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom"; // Import useNavigate
 import AppLayout from "./components/layout/AppLayout";
 import DashboardPage from "./pages/DashboardPage";
 import TeamsPage from "./pages/TeamsPage";
@@ -31,6 +31,8 @@ const App = () => {
   const [trainingSessions, setTrainingSessions] = React.useState<TrainingSession[]>([]);
   const [loadingData, setLoadingData] = React.useState(false);
 
+  const navigate = useNavigate(); // Initialize useNavigate
+
   // --- Supabase Auth State Management ---
   React.useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -43,10 +45,14 @@ const App = () => {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setLoadingAuth(false);
+      // Explicitly navigate after successful sign-in if on the login page
+      if (session && window.location.pathname === '/login') {
+        navigate('/');
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]); // Add navigate to dependency array
 
   // --- Data Fetching from Supabase ---
   const fetchTeams = async () => {
