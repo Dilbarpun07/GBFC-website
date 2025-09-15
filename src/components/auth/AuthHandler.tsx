@@ -13,27 +13,45 @@ interface AuthHandlerProps {
 const AuthHandler: React.FC<AuthHandlerProps> = ({ setSession, setLoadingAuth }) => {
   const navigate = useNavigate();
 
+  console.log("AuthHandler component rendered.");
+
   React.useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoadingAuth(false);
-    });
+    console.log("AuthHandler useEffect: Initializing auth state check.");
+
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        console.log("AuthHandler: getSession resolved. Session:", session);
+        setSession(session);
+        setLoadingAuth(false);
+        console.log("AuthHandler: setLoadingAuth(false) after getSession.");
+      })
+      .catch((error) => {
+        console.error("AuthHandler: Error getting session:", error);
+        setLoadingAuth(false); // Ensure loading state is cleared even on error
+        console.log("AuthHandler: setLoadingAuth(false) after getSession error.");
+      });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log("AuthHandler: onAuthStateChange event:", _event, "Session:", session);
       setSession(session);
       setLoadingAuth(false);
+      console.log("AuthHandler: setLoadingAuth(false) after onAuthStateChange.");
       // Explicitly navigate after successful sign-in if on the login page
       if (session && window.location.pathname === '/login') {
+        console.log("AuthHandler: Navigating to / after successful login.");
         navigate('/');
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      console.log("AuthHandler useEffect cleanup: Unsubscribing from auth state changes.");
+      subscription.unsubscribe();
+    };
   }, [setSession, setLoadingAuth, navigate]);
 
-  return null; // This component doesn't render anything itself
+  return null;
 };
 
 export default AuthHandler;
