@@ -1,10 +1,7 @@
 GBFC Website 🌐
-A modern, responsive website for [Your Club/Organisation Name], built with TypeScript, Vite, and Tailwind CSS.
+A modern, responsive website for Gorkha Bulls Football Club, built with TypeScript, Vite, and Tailwind CSS.
 Designed for speed, scalability, and ease of maintenance.
-
-📸 Preview
-Project Screenshot
-(Replace with an actual screenshot or GIF of your site)
+----------------------------------------------------------------------------------------------------------------
 
 🚀 Features
 - ⚡ Fast — Powered by Vite for lightning‑quick builds and hot reloads
@@ -13,37 +10,44 @@ Project Screenshot
 - 🛠 Type‑Safe — Built with TypeScript for maintainable, bug‑resistant code
 - 🌍 SEO‑Ready — Configurable meta tags and Open Graph support
 
+----------------------------------------------------------------------------------------------------------------
 🛠 Tech Stack
 - Frontend: TypeScript, React (via Vite), Tailwind CSS
 - Build Tool: Vite
 - Hosting: Vercel (or your hosting provider)
 
+----------------------------------------------------------------------------------------------------------------
 📦 Installation & Setup
 Clone the repository:
 git clone https://github.com/Dilbarpun07/GBFC-website.git
 cd GBFC-website
 
-
+---------------------------------------------------------------------------------------------------------------
 Install dependencies:
 npm install
 
+---------------------------------------------------------------------------------------------------------------
 
 Run the development server:
 npm run dev
 
+---------------------------------------------------------------------------------------------------------------
 
 Build for production:
 npm run build
 
+---------------------------------------------------------------------------------------------------------------
 
 Preview production build:
 npm run preview
 
-
+---------------------------------------------------------------------------------------------------------------
 
 📂 Project Structure
+
 GBFC-website/
-├── public/             # Static assets
+
+├── public/ # Static assets
 ├── src/
 │   ├── components/     # Reusable UI components
 │   ├── pages/          # Page-level components
@@ -54,18 +58,20 @@ GBFC-website/
 ├── tailwind.config.js
 └── README.md
 
-
+--------------------------------------------------------------------------------------------------------------
 
 🌐 Deployment
 This project is deployed on Vercel.
-Live site: https://your-vercel-link.vercel.app (replace with your actual link)
+Live site: 
 
+--------------------------------------------------------------------------------------------------------------
 📈 Future Improvements
 - Add unit tests with Vitest + React Testing Library
 - Implement CI/CD with GitHub Actions
 - Add Lighthouse performance & accessibility optimizations
 - Dockerize for containerized deployment
 
+--------------------------------------------------------------------------------------------------------------
 🤝 Contributing
 - Fork the repo
 - Create a new branch (feature/your-feature)
@@ -73,6 +79,7 @@ Live site: https://your-vercel-link.vercel.app (replace with your actual link)
 - Push to your branch
 - Open a Pull Request
 
+--------------------------------------------------------------------------------------------------------------
 📜 License
 This project is licensed under the MIT License — see the LICENSE file for details.
 
