@@ -6,7 +6,7 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 
 const Login: React.FC = () => {
-  console.log("Login component rendered. Supabase client:", supabase); // Added log
+  console.log("Login component rendered. Supabase client:", supabase);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
@@ -19,7 +19,7 @@ const Login: React.FC = () => {
         </p>
         <Auth
           supabaseClient={supabase}
-          providers={[]} // No third-party providers for now
+          providers={[]}
           appearance={{
             theme: ThemeSupa,
             variables: {
@@ -31,9 +31,9 @@ const Login: React.FC = () => {
               },
             },
           }}
-          theme="light" // Using light theme, adjust if dark theme is preferred
-          redirectTo={window.location.origin} // Redirect to the app root after login
-          view="sign_in" // Explicitly set the view to sign_in
+          theme="light"
+          redirectTo="/" // Changed to relative path for better React Router integration
+          view="sign_in"
         />
       </div>
     </div>
