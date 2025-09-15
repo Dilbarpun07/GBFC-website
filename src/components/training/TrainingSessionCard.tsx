@@ -104,7 +104,7 @@ const TrainingSessionCard: React.FC<TrainingSessionCardProps> = ({
         isOpen={isEditSessionDialogOpen}
         onOpenChange={setIsEditSessionDialogOpen}
         sessionToEdit={session}
-        teams={teams} {/* Pass the teams prop here */}
+        teams={teams}
         players={players}
         onEditTrainingSession={onEditTrainingSession}
       />
