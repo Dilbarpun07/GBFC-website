@@ -170,6 +170,17 @@ const App = () => {
     }
   };
 
+  const handleEditTeam = async (teamId: string, newName: string) => {
+    const { error } = await supabase.from("teams").update({ name: newName }).eq("id", teamId);
+    if (error) {
+      console.error("Error updating team:", error);
+      toast.error("Failed to update team.");
+    } else {
+      toast.success("Team updated successfully!");
+      fetchTeams().then(setTeams);
+    }
+  };
+
   const handleAddPlayer = async (newPlayer: Omit<Player, "id">) => {
     // Map to snake_case for Supabase insert
     const playerToInsert = {
@@ -275,7 +286,7 @@ const App = () => {
     const newlyAttendedPlayerIds = updatedSessionData.attendedPlayerIds.filter(
       (id) => !originalAttendedIds.has(id)
     );
-    const removedPlayerIds = originalSession.attendedPlayerIds.filter(
+    const removedPlayerIds = originalAttendedIds.filter(
       (id) => !updatedAttendedIds.has(id)
     );
 
@@ -399,6 +410,7 @@ const App = () => {
                         onEditTrainingSession={handleEditTrainingSession}
                         onCreateTeam={handleCreateTeam}
                         onDeleteTeam={handleDeleteTeam}
+                        onEditTeam={handleEditTeam} // Pass new handler
                         onDeletePlayer={handleDeletePlayer}
                         onDeleteMatch={handleDeleteMatch}
                         onDeleteTrainingSession={handleDeleteTrainingSession}
@@ -415,6 +427,7 @@ const App = () => {
                         onAddPlayer={handleAddPlayer}
                         onCreateTeam={handleCreateTeam}
                         onDeleteTeam={handleDeleteTeam}
+                        onEditTeam={handleEditTeam} // Pass new handler
                       />
                     }
                   />

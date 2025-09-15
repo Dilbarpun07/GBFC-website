@@ -16,8 +16,13 @@ interface AppLayoutContext {
   onAddMatch: (match: Omit<Match, "id">) => void;
   trainingSessions: TrainingSession[];
   onAddTrainingSession: (session: Omit<TrainingSession, "id">) => void;
+  onEditTrainingSession: (
+    originalSession: TrainingSession,
+    updatedSessionData: Partial<Omit<TrainingSession, "id">>
+  ) => void;
   onCreateTeam: (teamName: string) => void;
   onDeleteTeam: (teamId: string) => void;
+  onEditTeam: (teamId: string, newName: string) => void; // Added onEditTeam to context
   onDeletePlayer: (playerId: string) => void;
   onDeleteMatch: (matchId: string) => void;
   onDeleteTrainingSession: (sessionId: string) => void;

@@ -26,6 +26,7 @@ interface AppLayoutProps {
   ) => void;
   onCreateTeam: (teamName: string) => void;
   onDeleteTeam: (teamId: string) => void;
+  onEditTeam: (teamId: string, newName: string) => void; // Added onEditTeam prop
   onDeletePlayer: (playerId: string) => void;
   onDeleteMatch: (matchId: string) => void;
   onDeleteTrainingSession: (sessionId: string) => void;
@@ -42,6 +43,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   onEditTrainingSession,
   onCreateTeam,
   onDeleteTeam,
+  onEditTeam, // Destructure new prop
   onDeletePlayer,
   onDeleteMatch,
   onDeleteTrainingSession,
@@ -88,6 +90,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
               onEditTrainingSession,
               onCreateTeam,
               onDeleteTeam,
+              onEditTeam, // Pass new prop to context
               onDeletePlayer,
               onDeleteMatch,
               onDeleteTrainingSession,
@@ -148,6 +151,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
                 onEditTrainingSession,
                 onCreateTeam,
                 onDeleteTeam,
+                onEditTeam, // Pass new prop to context
                 onDeletePlayer,
                 onDeleteMatch,
                 onDeleteTrainingSession,
