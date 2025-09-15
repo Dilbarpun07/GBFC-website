@@ -149,10 +149,10 @@ const App = () => {
       }
     };
     // Only load data if auth is not loading and a session exists
-    if (!loadingAuth) {
+    if (!loadingAuth) { 
       loadAllData();
     }
-  }, [session, loadingAuth]);
+  }, [session, loadingAuth]); 
 
   // --- Handlers for adding/updating data via Supabase ---
   const handleCreateTeam = async (teamName: string) => {
@@ -292,82 +292,77 @@ const App = () => {
     }
   };
 
-
-  if (loadingAuth) {
-    console.log("Showing loading screen (Auth). loadingAuth:", loadingAuth);
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Loading authentication...</p>
-      </div>
-    );
-  }
-
-  if (loadingData) {
-    console.log("Showing loading screen (Data). loadingData:", loadingData);
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Loading application data...</p>
-      </div>
-    );
-  }
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          {/* AuthHandler must always render to manage auth state */}
           <AuthHandler setSession={setSession} setLoadingAuth={setLoadingAuth} />
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route element={<AuthWrapper session={session} />}>
-              <Route
-                path="/"
-                element={
-                  <AppLayout
-                    teams={teams}
-                    players={players}
-                    onAddPlayer={handleAddPlayer}
-                    matches={matches}
-                    onAddMatch={handleAddMatch}
-                    trainingSessions={trainingSessions}
-                    onAddTrainingSession={handleAddTrainingSession}
-                    onCreateTeam={handleCreateTeam}
-                    onDeleteTeam={handleDeleteTeam}
-                    onDeletePlayer={onDeletePlayer}
-                    onDeleteMatch={handleDeleteMatch}
-                    onDeleteTrainingSession={handleDeleteTrainingSession}
-                  />
-                }
-              >
-                <Route index element={<DashboardPage />} />
+
+          {loadingAuth ? (
+            <div className="flex items-center justify-center min-h-screen">
+              <p>Loading authentication...</p>
+            </div>
+          ) : (
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route element={<AuthWrapper session={session} />}>
                 <Route
-                  path="teams"
+                  path="/"
                   element={
-                    <TeamsPage
-                      teams={teams}
-                      onAddPlayer={handleAddPlayer}
-                      onCreateTeam={handleCreateTeam}
-                      onDeleteTeam={handleDeleteTeam}
-                    />
+                    loadingData ? (
+                      <div className="flex items-center justify-center min-h-screen">
+                        <p>Loading application data...</p>
+                      </div>
+                    ) : (
+                      <AppLayout
+                        teams={teams}
+                        players={players}
+                        onAddPlayer={handleAddPlayer}
+                        matches={matches}
+                        onAddMatch={handleAddMatch}
+                        trainingSessions={trainingSessions}
+                        onAddTrainingSession={handleAddTrainingSession}
+                        onCreateTeam={handleCreateTeam}
+                        onDeleteTeam={handleDeleteTeam}
+                        onDeletePlayer={handleDeletePlayer}
+                        onDeleteMatch={handleDeleteMatch}
+                        onDeleteTrainingSession={handleDeleteTrainingSession}
+                      />
+                    )
                   }
-                />
-                <Route
-                  path="players"
-                  element={<PlayersPage players={players} teams={teams} onDeletePlayer={handleDeletePlayer} />}
-                />
-                <Route
-                  path="schedule"
-                  element={<SchedulePage matches={matches} teams={teams} onAddMatch={handleAddMatch} onDeleteMatch={handleDeleteMatch} />}
-                />
-                <Route
-                  path="training"
-                  element={<TrainingPage trainingSessions={trainingSessions} teams={teams} players={players} onAddTrainingSession={handleAddTrainingSession} onDeleteTrainingSession={handleDeleteTrainingSession} />}
-                />
-                <Route path="*" element={<NotFound />} />
+                >
+                  <Route index element={<DashboardPage />} />
+                  <Route
+                    path="teams"
+                    element={
+                      <TeamsPage
+                        teams={teams}
+                        onAddPlayer={handleAddPlayer}
+                        onCreateTeam={handleCreateTeam}
+                        onDeleteTeam={handleDeleteTeam}
+                      />
+                    }
+                  />
+                  <Route
+                    path="players"
+                    element={<PlayersPage players={players} teams={teams} onDeletePlayer={handleDeletePlayer} />}
+                  />
+                  <Route
+                    path="schedule"
+                    element={<SchedulePage matches={matches} teams={teams} onAddMatch={handleAddMatch} onDeleteMatch={handleDeleteMatch} />}
+                  />
+                  <Route
+                    path="training"
+                    element={<TrainingPage trainingSessions={trainingSessions} teams={teams} players={players} onAddTrainingSession={handleAddTrainingSession} onDeleteTrainingSession={handleDeleteTrainingSession} />}
+                  />
+                  <Route path="*" element={<NotFound />} />
+                </Route>
               </Route>
-            </Route>
-          </Routes>
+            </Routes>
+          )}
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
