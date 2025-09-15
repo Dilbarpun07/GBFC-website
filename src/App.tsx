@@ -32,7 +32,14 @@ const App = () => {
   const [trainingSessions, setTrainingSessions] = React.useState<TrainingSession[]>([]);
   const [loadingData, setLoadingData] = React.useState(false);
 
-  console.log("App render: loadingAuth =", loadingAuth, ", loadingData =", loadingData);
+  console.log("App render: loadingAuth =", loadingAuth, ", loadingData =", loadingData, ", session =", session);
+
+  React.useEffect(() => {
+    console.log("App component mounted");
+    return () => {
+      console.log("App component unmounted");
+    };
+  }, []);
 
   // --- Data Fetching from Supabase ---
   const fetchTeams = async () => {
@@ -141,8 +148,11 @@ const App = () => {
         }
       }
     };
-    loadAllData();
-  }, [session]);
+    // Only load data if auth is not loading and a session exists
+    if (!loadingAuth) {
+      loadAllData();
+    }
+  }, [session, loadingAuth]);
 
   // --- Handlers for adding/updating data via Supabase ---
   const handleCreateTeam = async (teamName: string) => {
@@ -283,11 +293,20 @@ const App = () => {
   };
 
 
-  if (loadingAuth || loadingData) {
-    console.log("Showing loading screen. loadingAuth:", loadingAuth, "loadingData:", loadingData);
+  if (loadingAuth) {
+    console.log("Showing loading screen (Auth). loadingAuth:", loadingAuth);
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p>Loading...</p>
+        <p>Loading authentication...</p>
+      </div>
+    );
+  }
+
+  if (loadingData) {
+    console.log("Showing loading screen (Data). loadingData:", loadingData);
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p>Loading application data...</p>
       </div>
     );
   }
@@ -315,7 +334,7 @@ const App = () => {
                     onAddTrainingSession={handleAddTrainingSession}
                     onCreateTeam={handleCreateTeam}
                     onDeleteTeam={handleDeleteTeam}
-                    onDeletePlayer={handleDeletePlayer}
+                    onDeletePlayer={onDeletePlayer}
                     onDeleteMatch={handleDeleteMatch}
                     onDeleteTrainingSession={handleDeleteTrainingSession}
                   />
