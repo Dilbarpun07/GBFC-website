@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dumbbell, Trash2 } from "lucide-react";
+import { Dumbbell, Trash2, Pencil } from "lucide-react"; // Added Pencil icon
 import { TrainingSession, Team, Player } from "@/types";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -15,15 +15,27 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import EditTrainingSessionDialog from "./EditTrainingSessionDialog"; // Import the new dialog
 
 interface TrainingSessionCardProps {
   session: TrainingSession;
   team: Team | undefined;
   players: Player[];
   onDeleteTrainingSession: (sessionId: string) => void;
+  onEditTrainingSession: (
+    originalSession: TrainingSession,
+    updatedSessionData: Partial<Omit<TrainingSession, "id">>
+  ) => void;
 }
 
-const TrainingSessionCard: React.FC<TrainingSessionCardProps> = ({ session, team, players, onDeleteTrainingSession }) => {
+const TrainingSessionCard: React.FC<TrainingSessionCardProps> = ({
+  session,
+  team,
+  players,
+  onDeleteTrainingSession,
+  onEditTrainingSession,
+}) => {
+  const [isEditSessionDialogOpen, setIsEditSessionDialogOpen] = React.useState(false);
   const attendedPlayers = players.filter(player => session.attendedPlayerIds.includes(player.id));
 
   return (
@@ -33,7 +45,14 @@ const TrainingSessionCard: React.FC<TrainingSessionCardProps> = ({ session, team
           Training for {team?.name || "Unknown Team"}
         </CardTitle>
         <div className="flex items-center gap-2">
-          <Dumbbell className="h-5 w-5 text-muted-foreground" />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-primary"
+            onClick={() => setIsEditSessionDialogOpen(true)}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
@@ -79,6 +98,14 @@ const TrainingSessionCard: React.FC<TrainingSessionCardProps> = ({ session, team
           </div>
         )}
       </CardContent>
+      <EditTrainingSessionDialog
+        isOpen={isEditSessionDialogOpen}
+        onOpenChange={setIsEditSessionDialogOpen}
+        sessionToEdit={session}
+        teams={teams}
+        players={players}
+        onEditTrainingSession={onEditTrainingSession}
+      />
     </Card>
   );
 };

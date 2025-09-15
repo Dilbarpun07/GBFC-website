@@ -20,6 +20,10 @@ interface AppLayoutProps {
   onAddMatch: (match: Omit<Match, "id">) => void;
   trainingSessions: TrainingSession[];
   onAddTrainingSession: (session: Omit<TrainingSession, "id">) => void;
+  onEditTrainingSession: (
+    originalSession: TrainingSession,
+    updatedSessionData: Partial<Omit<TrainingSession, "id">>
+  ) => void;
   onCreateTeam: (teamName: string) => void;
   onDeleteTeam: (teamId: string) => void;
   onDeletePlayer: (playerId: string) => void;
@@ -35,6 +39,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   onAddMatch,
   trainingSessions,
   onAddTrainingSession,
+  onEditTrainingSession,
   onCreateTeam,
   onDeleteTeam,
   onDeletePlayer,
@@ -80,6 +85,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
               onAddMatch,
               trainingSessions,
               onAddTrainingSession,
+              onEditTrainingSession,
               onCreateTeam,
               onDeleteTeam,
               onDeletePlayer,
@@ -139,6 +145,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
                 onAddMatch,
                 trainingSessions,
                 onAddTrainingSession,
+                onEditTrainingSession,
                 onCreateTeam,
                 onDeleteTeam,
                 onDeletePlayer,

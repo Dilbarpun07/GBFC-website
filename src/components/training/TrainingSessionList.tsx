@@ -7,6 +7,10 @@ interface TrainingSessionListProps {
   teams: Team[];
   players: Player[];
   onDeleteTrainingSession: (sessionId: string) => void;
+  onEditTrainingSession: (
+    originalSession: TrainingSession,
+    updatedSessionData: Partial<Omit<TrainingSession, "id">>
+  ) => void;
 }
 
 const TrainingSessionList: React.FC<TrainingSessionListProps> = ({
@@ -14,6 +18,7 @@ const TrainingSessionList: React.FC<TrainingSessionListProps> = ({
   teams,
   players,
   onDeleteTrainingSession,
+  onEditTrainingSession,
 }) => {
   if (trainingSessions.length === 0) {
     return (
@@ -37,6 +42,7 @@ const TrainingSessionList: React.FC<TrainingSessionListProps> = ({
             team={team}
             players={players}
             onDeleteTrainingSession={onDeleteTrainingSession}
+            onEditTrainingSession={onEditTrainingSession}
           />
         );
       })}

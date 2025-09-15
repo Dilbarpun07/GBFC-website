@@ -241,6 +241,77 @@ const App = () => {
     }
   };
 
+  const handleEditTrainingSession = async (
+    originalSession: TrainingSession,
+    updatedSessionData: Partial<Omit<TrainingSession, "id">>
+  ) => {
+    if (!updatedSessionData.attendedPlayerIds) {
+      toast.error("Attended player IDs are required for updating a training session.");
+      return;
+    }
+
+    // Update the training session itself
+    const sessionToUpdate = {
+      team_id: updatedSessionData.teamId,
+      date: updatedSessionData.date,
+      attended_player_ids: updatedSessionData.attendedPlayerIds,
+    };
+
+    const { error: sessionUpdateError } = await supabase
+      .from("training_sessions")
+      .update(sessionToUpdate)
+      .eq("id", originalSession.id);
+
+    if (sessionUpdateError) {
+      console.error("Error updating training session:", sessionUpdateError);
+      toast.error("Failed to update training session.");
+      return;
+    }
+
+    // Calculate newly added and removed players for attendance count updates
+    const originalAttendedIds = new Set(originalSession.attendedPlayerIds);
+    const updatedAttendedIds = new Set(updatedSessionData.attendedPlayerIds);
+
+    const newlyAttendedPlayerIds = updatedSessionData.attendedPlayerIds.filter(
+      (id) => !originalAttendedIds.has(id)
+    );
+    const removedPlayerIds = originalSession.attendedPlayerIds.filter(
+      (id) => !updatedAttendedIds.has(id)
+    );
+
+    // Increment attendance for newly added players
+    for (const playerId of newlyAttendedPlayerIds) {
+      const playerToUpdate = players.find((p) => p.id === playerId);
+      if (playerToUpdate) {
+        const { error: updateError } = await supabase
+          .from("players")
+          .update({ trainings_attended: playerToUpdate.trainingsAttended + 1 })
+          .eq("id", playerId);
+        if (updateError) {
+          console.error(`Error incrementing training count for player ${playerId}:`, updateError);
+        }
+      }
+    }
+
+    // Decrement attendance for removed players
+    for (const playerId of removedPlayerIds) {
+      const playerToUpdate = players.find((p) => p.id === playerId);
+      if (playerToUpdate && playerToUpdate.trainingsAttended > 0) {
+        const { error: updateError } = await supabase
+          .from("players")
+          .update({ trainings_attended: playerToUpdate.trainingsAttended - 1 })
+          .eq("id", playerId);
+        if (updateError) {
+          console.error(`Error decrementing training count for player ${playerId}:`, updateError);
+        }
+      }
+    }
+
+    toast.success("Training session updated successfully!");
+    fetchTrainingSessions().then(setTrainingSessions);
+    fetchPlayers().then(setPlayers); // Refetch players to update their attendance counts
+  };
+
   // --- Delete Handlers ---
   const handleDeleteTeam = async (teamId: string) => {
     const { error } = await supabase.from("teams").delete().eq("id", teamId);
@@ -325,6 +396,7 @@ const App = () => {
                         onAddMatch={handleAddMatch}
                         trainingSessions={trainingSessions}
                         onAddTrainingSession={handleAddTrainingSession}
+                        onEditTrainingSession={handleEditTrainingSession}
                         onCreateTeam={handleCreateTeam}
                         onDeleteTeam={handleDeleteTeam}
                         onDeletePlayer={handleDeletePlayer}
@@ -356,7 +428,7 @@ const App = () => {
                   />
                   <Route
                     path="training"
-                    element={<TrainingPage trainingSessions={trainingSessions} teams={teams} players={players} onAddTrainingSession={handleAddTrainingSession} onDeleteTrainingSession={handleDeleteTrainingSession} />}
+                    element={<TrainingPage trainingSessions={trainingSessions} teams={teams} players={players} onAddTrainingSession={handleAddTrainingSession} onDeleteTrainingSession={handleDeleteTrainingSession} onEditTrainingSession={handleEditTrainingSession} />}
                   />
                   <Route path="*" element={<NotFound />} />
                 </Route>

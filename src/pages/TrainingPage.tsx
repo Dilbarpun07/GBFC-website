@@ -10,6 +10,10 @@ interface TrainingPageProps {
   players: Player[];
   onAddTrainingSession: (session: Omit<TrainingSession, "id">) => void;
   onDeleteTrainingSession: (sessionId: string) => void;
+  onEditTrainingSession: (
+    originalSession: TrainingSession,
+    updatedSessionData: Partial<Omit<TrainingSession, "id">>
+  ) => void;
 }
 
 const TrainingPage: React.FC<TrainingPageProps> = ({
@@ -18,6 +22,7 @@ const TrainingPage: React.FC<TrainingPageProps> = ({
   players,
   onAddTrainingSession,
   onDeleteTrainingSession,
+  onEditTrainingSession,
 }) => {
   const [isAddSessionDialogOpen, setIsAddSessionDialogOpen] = React.useState(false);
 
@@ -45,6 +50,7 @@ const TrainingPage: React.FC<TrainingPageProps> = ({
           teams={teams}
           players={players}
           onDeleteTrainingSession={onDeleteTrainingSession}
+          onEditTrainingSession={onEditTrainingSession}
         />
       </div>
     </div>
