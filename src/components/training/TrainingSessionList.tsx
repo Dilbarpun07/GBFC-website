@@ -40,6 +40,7 @@ const TrainingSessionList: React.FC<TrainingSessionListProps> = ({
             key={session.id}
             session={session}
             team={team}
+            teams={teams} // Pass the teams prop here
             players={players}
             onDeleteTrainingSession={onDeleteTrainingSession}
             onEditTrainingSession={onEditTrainingSession}

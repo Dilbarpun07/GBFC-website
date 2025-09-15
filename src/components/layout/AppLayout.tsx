@@ -119,7 +119,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         <div className="flex flex-col h-full">
           <div className="p-4 border-b">
             {!isSidebarCollapsed && (
-              <h1 className="text-xl font-bold text-primary">SportEasy</h1>
+              <h1 className="text-xl font-bold text-primary">GBFC</h1>
             )}
             {isSidebarCollapsed && (
               <h1 className="text-xl font-bold text-primary text-center">SE</h1>

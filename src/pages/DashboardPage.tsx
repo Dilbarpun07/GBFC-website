@@ -30,7 +30,7 @@ const DashboardPage: React.FC = () => {
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
       <p className="text-lg text-muted-foreground">
-        Welcome to your SportEasy app! This is your central hub for managing teams, players, and schedules.
+        Welcome to GBFC app! This is your central hub for managing teams, players, and schedules.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
         <TeamOverviewCard teams={teams} />

@@ -21,6 +21,7 @@ interface TrainingSessionCardProps {
   session: TrainingSession;
   team: Team | undefined;
   players: Player[];
+  teams: Team[]; // Added teams prop
   onDeleteTrainingSession: (sessionId: string) => void;
   onEditTrainingSession: (
     originalSession: TrainingSession,
@@ -32,6 +33,7 @@ const TrainingSessionCard: React.FC<TrainingSessionCardProps> = ({
   session,
   team,
   players,
+  teams, // Destructure teams prop
   onDeleteTrainingSession,
   onEditTrainingSession,
 }) => {
@@ -102,7 +104,7 @@ const TrainingSessionCard: React.FC<TrainingSessionCardProps> = ({
         isOpen={isEditSessionDialogOpen}
         onOpenChange={setIsEditSessionDialogOpen}
         sessionToEdit={session}
-        teams={teams}
+        teams={teams} {/* Pass the teams prop here */}
         players={players}
         onEditTrainingSession={onEditTrainingSession}
       />

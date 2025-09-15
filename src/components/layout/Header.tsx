@@ -29,7 +29,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           </Button>
         )}
         <Link to="/" className="text-xl font-bold text-primary">
-          SportEasy
+          Gorkha Bulls Football Club
         </Link>
       </div>
       <div>
