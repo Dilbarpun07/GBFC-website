@@ -56,7 +56,12 @@ const App = () => {
       toast.error("Failed to load teams.");
       return [];
     }
-    return data || [];
+    // Map snake_case from Supabase to camelCase for the Team interface
+    return (data || []).map((team: any) => ({
+      id: team.id,
+      name: team.name,
+      userId: team.user_id,
+    }));
   };
 
   const fetchPlayers = async () => {
@@ -140,7 +145,11 @@ const App = () => {
 
   // --- Handlers for adding/updating data via Supabase ---
   const handleCreateTeam = async (teamName: string) => {
-    const { data, error } = await supabase.from("teams").insert({ name: teamName }).select();
+    if (!session?.user?.id) {
+      toast.error("You must be logged in to create a team.");
+      return;
+    }
+    const { data, error } = await supabase.from("teams").insert({ name: teamName, user_id: session.user.id }).select();
     if (error) {
       console.error("Error creating team:", error);
       toast.error("Failed to create team.");
@@ -221,6 +230,58 @@ const App = () => {
     }
   };
 
+  // --- Delete Handlers ---
+  const handleDeleteTeam = async (teamId: string) => {
+    const { error } = await supabase.from("teams").delete().eq("id", teamId);
+    if (error) {
+      console.error("Error deleting team:", error);
+      toast.error("Failed to delete team.");
+    } else {
+      toast.success("Team deleted successfully!");
+      fetchTeams().then(setTeams);
+      fetchPlayers().then(setPlayers); // Players associated with the team might be deleted via CASCADE
+      fetchMatches().then(setMatches); // Matches associated with the team might be deleted via CASCADE
+      fetchTrainingSessions().then(setTrainingSessions); // Training sessions associated with the team might be deleted via CASCADE
+    }
+  };
+
+  const handleDeletePlayer = async (playerId: string) => {
+    const { error } = await supabase.from("players").delete().eq("id", playerId);
+    if (error) {
+      console.error("Error deleting player:", error);
+      toast.error("Failed to delete player.");
+    } else {
+      toast.success("Player deleted successfully!");
+      fetchPlayers().then(setPlayers);
+      fetchTrainingSessions().then(setTrainingSessions); // Update training sessions as player might be removed from attendance lists
+    }
+  };
+
+  const handleDeleteMatch = async (matchId: string) => {
+    const { error } = await supabase.from("matches").delete().eq("id", matchId);
+    if (error) {
+      console.error("Error deleting match:", error);
+      toast.error("Failed to delete match.");
+    } else {
+      toast.success("Match deleted successfully!");
+      fetchMatches().then(setMatches);
+    }
+  };
+
+  const handleDeleteTrainingSession = async (sessionId: string) => {
+    const { error } = await supabase.from("training_sessions").delete().eq("id", sessionId);
+    if (error) {
+      console.error("Error deleting training session:", error);
+      toast.error("Failed to delete training session.");
+    } else {
+      toast.success("Training session deleted successfully!");
+      fetchTrainingSessions().then(setTrainingSessions);
+      // Note: Player training counts are not decremented on session deletion for simplicity.
+      // This could be added if more complex logic is desired.
+    }
+  };
+
+
   if (loadingAuth || loadingData) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -250,6 +311,10 @@ const App = () => {
                     trainingSessions={trainingSessions}
                     onAddTrainingSession={handleAddTrainingSession}
                     onCreateTeam={handleCreateTeam}
+                    onDeleteTeam={handleDeleteTeam}
+                    onDeletePlayer={handleDeletePlayer}
+                    onDeleteMatch={handleDeleteMatch}
+                    onDeleteTrainingSession={handleDeleteTrainingSession}
                   />
                 }
               >
@@ -261,20 +326,21 @@ const App = () => {
                       teams={teams}
                       onAddPlayer={handleAddPlayer}
                       onCreateTeam={handleCreateTeam}
+                      onDeleteTeam={handleDeleteTeam}
                     />
                   }
                 />
                 <Route
                   path="players"
-                  element={<PlayersPage players={players} teams={teams} />}
+                  element={<PlayersPage players={players} teams={teams} onDeletePlayer={handleDeletePlayer} />}
                 />
                 <Route
                   path="schedule"
-                  element={<SchedulePage matches={matches} teams={teams} onAddMatch={handleAddMatch} />}
+                  element={<SchedulePage matches={matches} teams={teams} onAddMatch={handleAddMatch} onDeleteMatch={handleDeleteMatch} />}
                 />
                 <Route
                   path="training"
-                  element={<TrainingPage trainingSessions={trainingSessions} teams={teams} players={players} onAddTrainingSession={handleAddTrainingSession} />}
+                  element={<TrainingPage trainingSessions={trainingSessions} teams={teams} players={players} onAddTrainingSession={handleAddTrainingSession} onDeleteTrainingSession={handleDeleteTrainingSession} />}
                 />
                 <Route path="*" element={<NotFound />} />
               </Route>

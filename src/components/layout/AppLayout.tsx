@@ -21,6 +21,10 @@ interface AppLayoutProps {
   trainingSessions: TrainingSession[];
   onAddTrainingSession: (session: Omit<TrainingSession, "id">) => void;
   onCreateTeam: (teamName: string) => void;
+  onDeleteTeam: (teamId: string) => void;
+  onDeletePlayer: (playerId: string) => void;
+  onDeleteMatch: (matchId: string) => void;
+  onDeleteTrainingSession: (sessionId: string) => void;
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({
@@ -32,6 +36,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   trainingSessions,
   onAddTrainingSession,
   onCreateTeam,
+  onDeleteTeam,
+  onDeletePlayer,
+  onDeleteMatch,
+  onDeleteTrainingSession,
 }) => {
   const isMobile = useIsMobile();
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
@@ -73,6 +81,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({
               trainingSessions,
               onAddTrainingSession,
               onCreateTeam,
+              onDeleteTeam,
+              onDeletePlayer,
+              onDeleteMatch,
+              onDeleteTrainingSession,
             }}
           />
         </main>
@@ -128,6 +140,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({
                 trainingSessions,
                 onAddTrainingSession,
                 onCreateTeam,
+                onDeleteTeam,
+                onDeletePlayer,
+                onDeleteMatch,
+                onDeleteTrainingSession,
               }}
             />
           </main>

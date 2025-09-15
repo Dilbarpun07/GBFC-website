@@ -19,9 +19,10 @@ interface TeamsPageProps {
   teams: Team[];
   onAddPlayer: (player: Omit<Player, "id">) => void;
   onCreateTeam: (teamName: string) => void;
+  onDeleteTeam: (teamId: string) => void;
 }
 
-const TeamsPage: React.FC<TeamsPageProps> = ({ teams, onAddPlayer, onCreateTeam }) => {
+const TeamsPage: React.FC<TeamsPageProps> = ({ teams, onAddPlayer, onCreateTeam, onDeleteTeam }) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [teamName, setTeamName] = React.useState("");
 
@@ -77,7 +78,7 @@ const TeamsPage: React.FC<TeamsPageProps> = ({ teams, onAddPlayer, onCreateTeam 
 
       <div className="mt-8">
         <h2 className="text-2xl font-semibold mb-4">Your Teams</h2>
-        <TeamList teams={teams} onAddPlayer={onAddPlayer} />
+        <TeamList teams={teams} onAddPlayer={onAddPlayer} onDeleteTeam={onDeleteTeam} />
       </div>
     </div>
   );

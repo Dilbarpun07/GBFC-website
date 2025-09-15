@@ -5,9 +5,10 @@ import { Player, Team } from "@/types";
 interface PlayersPageProps {
   players: Player[];
   teams: Team[];
+  onDeletePlayer: (playerId: string) => void;
 }
 
-const PlayersPage: React.FC<PlayersPageProps> = ({ players, teams }) => {
+const PlayersPage: React.FC<PlayersPageProps> = ({ players, teams, onDeletePlayer }) => {
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6">Players</h1>
@@ -16,7 +17,7 @@ const PlayersPage: React.FC<PlayersPageProps> = ({ players, teams }) => {
       </p>
 
       <div className="mt-8">
-        <PlayerList players={players} teams={teams} />
+        <PlayerList players={players} teams={teams} onDeletePlayer={onDeletePlayer} />
       </div>
     </div>
   );

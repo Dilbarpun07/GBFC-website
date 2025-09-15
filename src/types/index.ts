@@ -1,6 +1,7 @@
 export interface Team {
   id: string;
   name: string;
+  userId: string; // Added userId to link teams to the owner
 }
 
 export interface Player {

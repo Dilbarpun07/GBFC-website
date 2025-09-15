@@ -14,19 +14,31 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Match, Team } from "@/types";
 import { toast } from "sonner";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Trash2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface SchedulePageProps {
   matches: Match[];
   teams: Team[];
   onAddMatch: (match: Omit<Match, "id">) => void;
+  onDeleteMatch: (matchId: string) => void;
 }
 
-const SchedulePage: React.FC<SchedulePageProps> = ({ matches, teams, onAddMatch }) => {
+const SchedulePage: React.FC<SchedulePageProps> = ({ matches, teams, onAddMatch, onDeleteMatch }) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [opponent, setOpponent] = React.useState("");
   const [selectedTeamId, setSelectedTeamId] = React.useState("");
@@ -171,12 +183,35 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ matches, teams, onAddMatch 
             {matches.map((match) => {
               const team = teams.find(t => t.id === match.teamId);
               return (
-                <div key={match.id} className="bg-card p-4 rounded-lg shadow-sm border">
-                  <h3 className="text-lg font-semibold">{team?.name} vs {match.opponent}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {match.date} at {match.time}
-                  </p>
-                  <p className="text-sm text-muted-foreground">{match.location}</p>
+                <div key={match.id} className="bg-card p-4 rounded-lg shadow-sm border flex justify-between items-start">
+                  <div>
+                    <h3 className="text-lg font-semibold">{team?.name} vs {match.opponent}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {match.date} at {match.time}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{match.location}</p>
+                  </div>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete the match "{team?.name} vs {match.opponent}" on {match.date}.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => onDeleteMatch(match.id)}>
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               );
             })}

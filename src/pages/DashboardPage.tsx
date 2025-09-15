@@ -17,6 +17,10 @@ interface AppLayoutContext {
   trainingSessions: TrainingSession[];
   onAddTrainingSession: (session: Omit<TrainingSession, "id">) => void;
   onCreateTeam: (teamName: string) => void;
+  onDeleteTeam: (teamId: string) => void;
+  onDeletePlayer: (playerId: string) => void;
+  onDeleteMatch: (matchId: string) => void;
+  onDeleteTrainingSession: (sessionId: string) => void;
 }
 
 const DashboardPage: React.FC = () => {

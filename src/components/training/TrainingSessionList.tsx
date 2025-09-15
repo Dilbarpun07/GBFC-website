@@ -6,12 +6,14 @@ interface TrainingSessionListProps {
   trainingSessions: TrainingSession[];
   teams: Team[];
   players: Player[];
+  onDeleteTrainingSession: (sessionId: string) => void;
 }
 
 const TrainingSessionList: React.FC<TrainingSessionListProps> = ({
   trainingSessions,
   teams,
   players,
+  onDeleteTrainingSession,
 }) => {
   if (trainingSessions.length === 0) {
     return (
@@ -34,6 +36,7 @@ const TrainingSessionList: React.FC<TrainingSessionListProps> = ({
             session={session}
             team={team}
             players={players}
+            onDeleteTrainingSession={onDeleteTrainingSession}
           />
         );
       })}
