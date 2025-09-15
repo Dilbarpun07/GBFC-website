@@ -9,6 +9,7 @@ interface AuthWrapperProps {
 }
 
 const AuthWrapper: React.FC<AuthWrapperProps> = ({ session }) => {
+  console.log("AuthWrapper component rendered. Session received:", session);
   const navigate = useNavigate();
 
   React.useEffect(() => {

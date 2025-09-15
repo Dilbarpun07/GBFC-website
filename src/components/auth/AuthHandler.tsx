@@ -11,6 +11,7 @@ interface AuthHandlerProps {
 }
 
 const AuthHandler: React.FC<AuthHandlerProps> = ({ setSession, setLoadingAuth }) => {
+  console.log("AuthHandler component function body executed."); // New log here
   const navigate = useNavigate();
 
   console.log("AuthHandler component rendered.");
