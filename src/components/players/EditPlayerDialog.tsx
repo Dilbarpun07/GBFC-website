@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -6,20 +6,29 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Player, Team } from "@/types";
-import { toast } from "sonner";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Player, Team } from '@/types';
+import { toast } from 'sonner';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface EditPlayerDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   playerToEdit: Player;
   teams: Team[];
-  onEditPlayer: (playerId: string, updatedPlayer: Partial<Omit<Player, "id">>) => void;
+  onEditPlayer: (
+    playerId: string,
+    updatedPlayer: Partial<Omit<Player, 'id'>>
+  ) => void;
 }
 
 const EditPlayerDialog: React.FC<EditPlayerDialogProps> = ({
@@ -30,9 +39,15 @@ const EditPlayerDialog: React.FC<EditPlayerDialogProps> = ({
   onEditPlayer,
 }) => {
   const [playerName, setPlayerName] = React.useState(playerToEdit.name);
-  const [selectedTeamId, setSelectedTeamId] = React.useState(playerToEdit.teamId);
-  const [matchesPlayed, setMatchesPlayed] = React.useState(playerToEdit.matchesPlayed.toString());
-  const [trainingsAttended, setTrainingsAttended] = React.useState(playerToEdit.trainingsAttended.toString());
+  const [selectedTeamId, setSelectedTeamId] = React.useState(
+    playerToEdit.teamId
+  );
+  const [matchesPlayed, setMatchesPlayed] = React.useState(
+    playerToEdit.matchesPlayed.toString()
+  );
+  const [trainingsAttended, setTrainingsAttended] = React.useState(
+    playerToEdit.trainingsAttended.toString()
+  );
   const [goals, setGoals] = React.useState(playerToEdit.goals.toString());
   const [assists, setAssists] = React.useState(playerToEdit.assists.toString());
 
@@ -48,7 +63,7 @@ const EditPlayerDialog: React.FC<EditPlayerDialogProps> = ({
   }, [isOpen, playerToEdit]);
 
   const handleEditPlayer = async () => {
-    const updatedPlayer: Partial<Omit<Player, "id">> = {
+    const updatedPlayer: Partial<Omit<Player, 'id'>> = {
       name: playerName.trim(),
       teamId: selectedTeamId,
       matchesPlayed: parseInt(matchesPlayed, 10) || 0,
@@ -71,11 +86,11 @@ const EditPlayerDialog: React.FC<EditPlayerDialogProps> = ({
         await onEditPlayer(playerToEdit.id, updatedPlayer);
         onOpenChange(false);
       } else {
-        toast.info("No changes made to the player details.");
+        toast.info('No changes made to the player details.');
         onOpenChange(false);
       }
     } else {
-      toast.error("Player name and team cannot be empty.");
+      toast.error('Player name and team cannot be empty.');
     }
   };
 

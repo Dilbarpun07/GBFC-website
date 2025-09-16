@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -6,25 +6,38 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { Match, Team } from "@/types";
-import { toast } from "sonner";
-import { CalendarIcon } from "lucide-react";
-import { format, parseISO } from "date-fns";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { Match, Team } from '@/types';
+import { toast } from 'sonner';
+import { CalendarIcon } from 'lucide-react';
+import { format, parseISO } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface EditMatchDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   matchToEdit: Match;
   teams: Team[];
-  onEditMatch: (matchId: string, updatedMatch: Partial<Omit<Match, "id">>) => void;
+  onEditMatch: (
+    matchId: string,
+    updatedMatch: Partial<Omit<Match, 'id'>>
+  ) => void;
 }
 
 const EditMatchDialog: React.FC<EditMatchDialogProps> = ({
@@ -35,8 +48,12 @@ const EditMatchDialog: React.FC<EditMatchDialogProps> = ({
   onEditMatch,
 }) => {
   const [opponent, setOpponent] = React.useState(matchToEdit.opponent);
-  const [selectedTeamId, setSelectedTeamId] = React.useState(matchToEdit.teamId);
-  const [date, setDate] = React.useState<Date | undefined>(parseISO(matchToEdit.date));
+  const [selectedTeamId, setSelectedTeamId] = React.useState(
+    matchToEdit.teamId
+  );
+  const [date, setDate] = React.useState<Date | undefined>(
+    parseISO(matchToEdit.date)
+  );
   const [time, setTime] = React.useState(matchToEdit.time);
   const [location, setLocation] = React.useState(matchToEdit.location);
 
@@ -51,10 +68,10 @@ const EditMatchDialog: React.FC<EditMatchDialogProps> = ({
   }, [isOpen, matchToEdit]);
 
   const handleEditMatch = async () => {
-    const updatedMatch: Partial<Omit<Match, "id">> = {
+    const updatedMatch: Partial<Omit<Match, 'id'>> = {
       teamId: selectedTeamId,
       opponent: opponent.trim(),
-      date: date ? format(date, "yyyy-MM-dd") : "",
+      date: date ? format(date, 'yyyy-MM-dd') : '',
       time: time.trim(),
       location: location.trim(),
     };
@@ -67,16 +84,22 @@ const EditMatchDialog: React.FC<EditMatchDialogProps> = ({
       updatedMatch.time !== matchToEdit.time ||
       updatedMatch.location !== matchToEdit.location;
 
-    if (opponent.trim() && selectedTeamId && date && time.trim() && location.trim()) {
+    if (
+      opponent.trim() &&
+      selectedTeamId &&
+      date &&
+      time.trim() &&
+      location.trim()
+    ) {
       if (hasChanges) {
         await onEditMatch(matchToEdit.id, updatedMatch);
         onOpenChange(false);
       } else {
-        toast.info("No changes made to the match details.");
+        toast.info('No changes made to the match details.');
         onOpenChange(false);
       }
     } else {
-      toast.error("Please fill in all match details.");
+      toast.error('Please fill in all match details.');
     }
   };
 
@@ -126,14 +149,14 @@ const EditMatchDialog: React.FC<EditMatchDialogProps> = ({
             <Popover>
               <PopoverTrigger asChild>
                 <Button
-                  variant={"outline"}
+                  variant={'outline'}
                   className={cn(
-                    "col-span-3 justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
+                    'col-span-3 justify-start text-left font-normal',
+                    !date && 'text-muted-foreground'
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>Pick a date</span>}
+                  {date ? format(date, 'PPP') : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">

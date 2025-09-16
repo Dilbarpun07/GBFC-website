@@ -1,5 +1,5 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
+import React from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -8,17 +8,27 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Match, Team } from "@/types";
-import { toast } from "sonner";
-import { CalendarIcon, Trash2, Pencil } from "lucide-react"; // Added Pencil icon
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Match, Team } from '@/types';
+import { toast } from 'sonner';
+import { CalendarIcon, Trash2, Pencil } from 'lucide-react'; // Added Pencil icon
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,45 +39,61 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import EditMatchDialog from "@/components/schedule/EditMatchDialog"; // Import the new dialog
+} from '@/components/ui/alert-dialog';
+import EditMatchDialog from '@/components/schedule/EditMatchDialog'; // Import the new dialog
 
 interface SchedulePageProps {
   matches: Match[];
   teams: Team[];
-  onAddMatch: (match: Omit<Match, "id">) => void;
+  onAddMatch: (match: Omit<Match, 'id'>) => void;
   onDeleteMatch: (matchId: string) => void;
-  onEditMatch: (matchId: string, updatedMatch: Partial<Omit<Match, "id">>) => void; // Added onEditMatch prop
+  onEditMatch: (
+    matchId: string,
+    updatedMatch: Partial<Omit<Match, 'id'>>
+  ) => void; // Added onEditMatch prop
 }
 
-const SchedulePage: React.FC<SchedulePageProps> = ({ matches, teams, onAddMatch, onDeleteMatch, onEditMatch }) => {
+const SchedulePage: React.FC<SchedulePageProps> = ({
+  matches,
+  teams,
+  onAddMatch,
+  onDeleteMatch,
+  onEditMatch,
+}) => {
   const [isAddMatchDialogOpen, setIsAddMatchDialogOpen] = React.useState(false);
-  const [isEditMatchDialogOpen, setIsEditMatchDialogOpen] = React.useState(false);
+  const [isEditMatchDialogOpen, setIsEditMatchDialogOpen] =
+    React.useState(false);
   const [matchToEdit, setMatchToEdit] = React.useState<Match | null>(null);
 
-  const [opponent, setOpponent] = React.useState("");
-  const [selectedTeamId, setSelectedTeamId] = React.useState("");
+  const [opponent, setOpponent] = React.useState('');
+  const [selectedTeamId, setSelectedTeamId] = React.useState('');
   const [date, setDate] = React.useState<Date | undefined>(undefined);
-  const [time, setTime] = React.useState("");
-  const [location, setLocation] = React.useState("");
+  const [time, setTime] = React.useState('');
+  const [location, setLocation] = React.useState('');
 
   const handleAddMatch = async () => {
-    if (opponent.trim() && selectedTeamId && date && time.trim() && location.trim()) {
+    if (
+      opponent.trim() &&
+      selectedTeamId &&
+      date &&
+      time.trim() &&
+      location.trim()
+    ) {
       await onAddMatch({
         teamId: selectedTeamId,
         opponent: opponent.trim(),
-        date: format(date, "yyyy-MM-dd"), // Consistent date format
+        date: format(date, 'yyyy-MM-dd'), // Consistent date format
         time: time.trim(),
         location: location.trim(),
       });
-      setOpponent("");
-      setSelectedTeamId("");
+      setOpponent('');
+      setSelectedTeamId('');
       setDate(undefined);
-      setTime("");
-      setLocation("");
+      setTime('');
+      setLocation('');
       setIsAddMatchDialogOpen(false);
     } else {
-      toast.error("Please fill in all match details.");
+      toast.error('Please fill in all match details.');
     }
   };
 
@@ -83,7 +109,10 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ matches, teams, onAddMatch,
         Organize and view your team's game and practice schedules.
       </p>
 
-      <Dialog open={isAddMatchDialogOpen} onOpenChange={setIsAddMatchDialogOpen}>
+      <Dialog
+        open={isAddMatchDialogOpen}
+        onOpenChange={setIsAddMatchDialogOpen}
+      >
         <DialogTrigger asChild>
           <Button>Add New Match</Button>
         </DialogTrigger>
@@ -131,14 +160,14 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ matches, teams, onAddMatch,
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
-                    variant={"outline"}
+                    variant={'outline'}
                     className={cn(
-                      "col-span-3 justify-start text-left font-normal",
-                      !date && "text-muted-foreground"
+                      'col-span-3 justify-start text-left font-normal',
+                      !date && 'text-muted-foreground'
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                    {date ? format(date, 'PPP') : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -187,19 +216,28 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ matches, teams, onAddMatch,
       <div className="mt-8">
         <h2 className="text-2xl font-semibold mb-4">Upcoming Matches</h2>
         {matches.length === 0 ? (
-          <p className="text-muted-foreground">No matches scheduled yet. Add one above!</p>
+          <p className="text-muted-foreground">
+            No matches scheduled yet. Add one above!
+          </p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {matches.map((match) => {
-              const team = teams.find(t => t.id === match.teamId);
+              const team = teams.find((t) => t.id === match.teamId);
               return (
-                <div key={match.id} className="bg-card p-4 rounded-lg shadow-sm border flex justify-between items-start">
+                <div
+                  key={match.id}
+                  className="bg-card p-4 rounded-lg shadow-sm border flex justify-between items-start"
+                >
                   <div>
-                    <h3 className="text-lg font-semibold">{team?.name} vs {match.opponent}</h3>
+                    <h3 className="text-lg font-semibold">
+                      {team?.name} vs {match.opponent}
+                    </h3>
                     <p className="text-sm text-muted-foreground">
                       {match.date} at {match.time}
                     </p>
-                    <p className="text-sm text-muted-foreground">{match.location}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {match.location}
+                    </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
@@ -212,20 +250,30 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ matches, teams, onAddMatch,
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:text-destructive"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogTitle>
+                            Are you absolutely sure?
+                          </AlertDialogTitle>
                           <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete the match "{team?.name} vs {match.opponent}" on {match.date}.
+                            This action cannot be undone. This will permanently
+                            delete the match "{team?.name} vs {match.opponent}"
+                            on {match.date}.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => onDeleteMatch(match.id)}>
+                          <AlertDialogAction
+                            onClick={() => onDeleteMatch(match.id)}
+                          >
                             Delete
                           </AlertDialogAction>
                         </AlertDialogFooter>

@@ -1,30 +1,36 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
+import React from 'react';
+import { Outlet } from 'react-router-dom';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import Header from "./Header";
-import Sidebar from "./Sidebar";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { MadeWithDyad } from "@/components/made-with-dyad";
-import { Team, Player, Match, TrainingSession } from "@/types";
+} from '@/components/ui/resizable';
+import Header from './Header';
+import Sidebar from './Sidebar';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { MadeWithDyad } from '@/components/made-with-dyad';
+import { Team, Player, Match, TrainingSession } from '@/types';
 
 interface AppLayoutProps {
   teams: Team[];
   players: Player[];
-  onAddPlayer: (player: Omit<Player, "id">) => void;
-  onEditPlayer: (playerId: string, updatedPlayer: Partial<Omit<Player, "id">>) => void;
+  onAddPlayer: (player: Omit<Player, 'id'>) => void;
+  onEditPlayer: (
+    playerId: string,
+    updatedPlayer: Partial<Omit<Player, 'id'>>
+  ) => void;
   matches: Match[];
-  onAddMatch: (match: Omit<Match, "id">) => void;
-  onEditMatch: (matchId: string, updatedMatch: Partial<Omit<Match, "id">>) => void; // Added onEditMatch prop
+  onAddMatch: (match: Omit<Match, 'id'>) => void;
+  onEditMatch: (
+    matchId: string,
+    updatedMatch: Partial<Omit<Match, 'id'>>
+  ) => void; // Added onEditMatch prop
   trainingSessions: TrainingSession[];
-  onAddTrainingSession: (session: Omit<TrainingSession, "id">) => void;
+  onAddTrainingSession: (session: Omit<TrainingSession, 'id'>) => void;
   onEditTrainingSession: (
     originalSession: TrainingSession,
-    updatedSessionData: Partial<Omit<TrainingSession, "id">>
+    updatedSessionData: Partial<Omit<TrainingSession, 'id'>>
   ) => void;
   onCreateTeam: (teamName: string) => void;
   onDeleteTeam: (teamId: string) => void;
@@ -121,8 +127,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         onCollapse={(collapsed) => handleSidebarCollapse(collapsed)}
         className={
           isSidebarCollapsed
-            ? "min-w-[50px] transition-all duration-300 ease-in-out"
-            : "min-w-[200px]"
+            ? 'min-w-[50px] transition-all duration-300 ease-in-out'
+            : 'min-w-[200px]'
         }
       >
         <div className="flex flex-col h-full">

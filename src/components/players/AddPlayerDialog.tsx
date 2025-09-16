@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -6,42 +6,62 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Player } from "@/types";
-import { toast } from "sonner";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Player, Team } from '@/types';
+import { toast } from 'sonner';
 
 interface AddPlayerDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onAddPlayer: (player: Omit<Player, "id">) => void;
-  teamId: string;
+  onAddPlayer: (player: Omit<Player, 'id'>) => void;
+  teams?: Team[];
+  teamId?: string;
 }
 
 const AddPlayerDialog: React.FC<AddPlayerDialogProps> = ({
   isOpen,
   onOpenChange,
   onAddPlayer,
+  teams,
   teamId,
 }) => {
-  const [playerName, setPlayerName] = React.useState("");
+  const [playerName, setPlayerName] = React.useState('');
+  const [selectedTeamId, setSelectedTeamId] = React.useState(teamId || '');
+
+  // Use effect to update selectedTeamId when teamId prop changes
+  React.useEffect(() => {
+    if (teamId) {
+      setSelectedTeamId(teamId);
+    }
+  }, [teamId]);
 
   const handleAddPlayer = async () => {
-    if (playerName.trim()) {
+    const effectiveTeamId = teamId || selectedTeamId;
+
+    if (playerName.trim() && effectiveTeamId) {
       await onAddPlayer({
         name: playerName.trim(),
-        teamId,
+        teamId: effectiveTeamId,
         matchesPlayed: 0,
         trainingsAttended: 0,
         goals: 0,
         assists: 0,
       });
-      setPlayerName("");
+      setPlayerName('');
+      if (!teamId) { // Only clear selection if using teams dropdown
+        setSelectedTeamId('');
+      }
       onOpenChange(false);
     } else {
-      toast.error("Player name cannot be empty.");
+      if (!playerName.trim()) {
+        toast.error('Player name cannot be empty.');
+      } else if (!effectiveTeamId) {
+        toast.error('Please select a team.');
+      }
     }
   };
 
@@ -51,7 +71,10 @@ const AddPlayerDialog: React.FC<AddPlayerDialogProps> = ({
         <DialogHeader>
           <DialogTitle>Add New Player</DialogTitle>
           <DialogDescription>
-            Enter the player's name. Click save when you're done.
+            {teams && !teamId
+              ? "Enter the player's name and select a team. Click save when you're done."
+              : "Enter the player's name. Click save when you're done."
+            }
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -67,6 +90,25 @@ const AddPlayerDialog: React.FC<AddPlayerDialogProps> = ({
               placeholder="e.g., Lionel Messi"
             />
           </div>
+          {teams && !teamId && (
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="team" className="text-right">
+                Team
+              </Label>
+              <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select a team" />
+                </SelectTrigger>
+                <SelectContent>
+                  {teams.map((team) => (
+                    <SelectItem key={team.id} value={team.id}>
+                      {team.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button type="submit" onClick={handleAddPlayer}>

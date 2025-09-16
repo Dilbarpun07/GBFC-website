@@ -1,9 +1,9 @@
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Users, PlusCircle, Trash2, Pencil } from "lucide-react"; // Added Pencil icon
-import { Team, Player } from "@/types";
-import AddPlayerDialog from "@/components/players/AddPlayerDialog";
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Users, PlusCircle, Trash2, Pencil } from 'lucide-react'; // Added Pencil icon
+import { Team, Player } from '@/types';
+import AddPlayerDialog from '@/components/players/AddPlayerDialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,18 +14,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import EditTeamDialog from "./EditTeamDialog"; // Import the new dialog
+} from '@/components/ui/alert-dialog';
+import EditTeamDialog from './EditTeamDialog'; // Import the new dialog
 
 interface TeamCardProps {
   team: Team;
-  onAddPlayer: (player: Omit<Player, "id">) => void;
+  onAddPlayer: (player: Omit<Player, 'id'>) => void;
   onDeleteTeam: (teamId: string) => void;
   onEditTeam: (teamId: string, newName: string) => void; // Added onEditTeam prop
 }
 
-const TeamCard: React.FC<TeamCardProps> = ({ team, onAddPlayer, onDeleteTeam, onEditTeam }) => {
-  const [isAddPlayerDialogOpen, setIsAddPlayerDialogOpen] = React.useState(false);
+const TeamCard: React.FC<TeamCardProps> = ({
+  team,
+  onAddPlayer,
+  onDeleteTeam,
+  onEditTeam,
+}) => {
+  const [isAddPlayerDialogOpen, setIsAddPlayerDialogOpen] =
+    React.useState(false);
   const [isEditTeamDialogOpen, setIsEditTeamDialogOpen] = React.useState(false); // State for edit dialog
 
   return (
@@ -44,7 +50,11 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, onAddPlayer, onDeleteTeam, on
           <Users className="h-5 w-5 text-muted-foreground" />
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-destructive hover:text-destructive"
+              >
                 <Trash2 className="h-4 w-4" />
               </Button>
             </AlertDialogTrigger>
@@ -52,8 +62,9 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, onAddPlayer, onDeleteTeam, on
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete the team "{team.name}"
-                  and all associated players, matches, and training sessions.
+                  This action cannot be undone. This will permanently delete the
+                  team "{team.name}" and all associated players, matches, and
+                  training sessions.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

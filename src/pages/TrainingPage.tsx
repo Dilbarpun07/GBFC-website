@@ -1,18 +1,18 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
-import AddTrainingSessionDialog from "@/components/training/AddTrainingSessionDialog";
-import TrainingSessionList from "@/components/training/TrainingSessionList";
-import { Team, Player, TrainingSession } from "@/types";
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import AddTrainingSessionDialog from '@/components/training/AddTrainingSessionDialog';
+import TrainingSessionList from '@/components/training/TrainingSessionList';
+import { Team, Player, TrainingSession } from '@/types';
 
 interface TrainingPageProps {
   trainingSessions: TrainingSession[];
   teams: Team[];
   players: Player[];
-  onAddTrainingSession: (session: Omit<TrainingSession, "id">) => void;
+  onAddTrainingSession: (session: Omit<TrainingSession, 'id'>) => void;
   onDeleteTrainingSession: (sessionId: string) => void;
   onEditTrainingSession: (
     originalSession: TrainingSession,
-    updatedSessionData: Partial<Omit<TrainingSession, "id">>
+    updatedSessionData: Partial<Omit<TrainingSession, 'id'>>
   ) => void;
 }
 
@@ -24,7 +24,8 @@ const TrainingPage: React.FC<TrainingPageProps> = ({
   onDeleteTrainingSession,
   onEditTrainingSession,
 }) => {
-  const [isAddSessionDialogOpen, setIsAddSessionDialogOpen] = React.useState(false);
+  const [isAddSessionDialogOpen, setIsAddSessionDialogOpen] =
+    React.useState(false);
 
   return (
     <div className="p-6">
@@ -33,7 +34,9 @@ const TrainingPage: React.FC<TrainingPageProps> = ({
         Record and review your team's training sessions and player attendance.
       </p>
 
-      <Button onClick={() => setIsAddSessionDialogOpen(true)}>Add New Training Session</Button>
+      <Button onClick={() => setIsAddSessionDialogOpen(true)}>
+        Add New Training Session
+      </Button>
 
       <AddTrainingSessionDialog
         isOpen={isAddSessionDialogOpen}

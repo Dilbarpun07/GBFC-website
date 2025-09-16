@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import React from "react";
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { supabase } from "@/integrations/supabase/client";
+import React from 'react';
+import { Auth } from '@supabase/auth-ui-react';
+import { ThemeSupa } from '@supabase/auth-ui-shared';
+import { supabase } from '@/integrations/supabase/client';
 
 const Login: React.FC = () => {
-  console.log("Login component rendered. Supabase client:", supabase);
+  console.log('Login component rendered. Supabase client:', supabase);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
@@ -25,8 +25,8 @@ const Login: React.FC = () => {
             variables: {
               default: {
                 colors: {
-                  brand: "hsl(var(--primary))",
-                  brandAccent: "hsl(var(--primary-foreground))",
+                  brand: 'hsl(var(--primary))',
+                  brandAccent: 'hsl(var(--primary-foreground))',
                 },
               },
             },

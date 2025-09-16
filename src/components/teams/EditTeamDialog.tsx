@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -6,12 +6,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Team } from "@/types";
-import { toast } from "sonner";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Team } from '@/types';
+import { toast } from 'sonner';
 
 interface EditTeamDialogProps {
   isOpen: boolean;
@@ -39,10 +39,10 @@ const EditTeamDialog: React.FC<EditTeamDialogProps> = ({
       await onEditTeam(teamToEdit.id, teamName.trim());
       onOpenChange(false);
     } else if (teamName.trim() === teamToEdit.name) {
-      toast.info("No changes made to the team name.");
+      toast.info('No changes made to the team name.');
       onOpenChange(false);
     } else {
-      toast.error("Team name cannot be empty.");
+      toast.error('Team name cannot be empty.');
     }
   };
 

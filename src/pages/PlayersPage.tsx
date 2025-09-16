@@ -1,15 +1,23 @@
-import React from "react";
-import PlayerList from "@/components/players/PlayerList";
-import { Player, Team } from "@/types";
+import React from 'react';
+import PlayerList from '@/components/players/PlayerList';
+import { Player, Team } from '@/types';
 
 interface PlayersPageProps {
   players: Player[];
   teams: Team[];
   onDeletePlayer: (playerId: string) => void;
-  onEditPlayer: (playerId: string, updatedPlayer: Partial<Omit<Player, "id">>) => void; // Added onEditPlayer prop
+  onEditPlayer: (
+    playerId: string,
+    updatedPlayer: Partial<Omit<Player, 'id'>>
+  ) => void; // Added onEditPlayer prop
 }
 
-const PlayersPage: React.FC<PlayersPageProps> = ({ players, teams, onDeletePlayer, onEditPlayer }) => {
+const PlayersPage: React.FC<PlayersPageProps> = ({
+  players,
+  teams,
+  onDeletePlayer,
+  onEditPlayer,
+}) => {
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6">Players</h1>

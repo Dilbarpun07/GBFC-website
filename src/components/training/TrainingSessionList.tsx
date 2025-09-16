@@ -1,6 +1,6 @@
-import React from "react";
-import TrainingSessionCard from "./TrainingSessionCard";
-import { TrainingSession, Team, Player } from "@/types";
+import React from 'react';
+import TrainingSessionCard from './TrainingSessionCard';
+import { TrainingSession, Team, Player } from '@/types';
 
 interface TrainingSessionListProps {
   trainingSessions: TrainingSession[];
@@ -9,7 +9,7 @@ interface TrainingSessionListProps {
   onDeleteTrainingSession: (sessionId: string) => void;
   onEditTrainingSession: (
     originalSession: TrainingSession,
-    updatedSessionData: Partial<Omit<TrainingSession, "id">>
+    updatedSessionData: Partial<Omit<TrainingSession, 'id'>>
   ) => void;
 }
 
@@ -22,7 +22,9 @@ const TrainingSessionList: React.FC<TrainingSessionListProps> = ({
 }) => {
   if (trainingSessions.length === 0) {
     return (
-      <p className="text-muted-foreground">No training sessions recorded yet. Add one above!</p>
+      <p className="text-muted-foreground">
+        No training sessions recorded yet. Add one above!
+      </p>
     );
   }
 

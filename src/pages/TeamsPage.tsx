@@ -1,5 +1,5 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
+import React from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -8,32 +8,38 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import TeamList from "@/components/teams/TeamList";
-import { Team, Player } from "@/types";
-import { toast } from "sonner";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import TeamList from '@/components/teams/TeamList';
+import { Team, Player } from '@/types';
+import { toast } from 'sonner';
 
 interface TeamsPageProps {
   teams: Team[];
-  onAddPlayer: (player: Omit<Player, "id">) => void;
+  onAddPlayer: (player: Omit<Player, 'id'>) => void;
   onCreateTeam: (teamName: string) => void;
   onDeleteTeam: (teamId: string) => void;
   onEditTeam: (teamId: string, newName: string) => void; // Added onEditTeam prop
 }
 
-const TeamsPage: React.FC<TeamsPageProps> = ({ teams, onAddPlayer, onCreateTeam, onDeleteTeam, onEditTeam }) => {
+const TeamsPage: React.FC<TeamsPageProps> = ({
+  teams,
+  onAddPlayer,
+  onCreateTeam,
+  onDeleteTeam,
+  onEditTeam,
+}) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [teamName, setTeamName] = React.useState("");
+  const [teamName, setTeamName] = React.useState('');
 
   const handleCreateTeam = async () => {
     if (teamName.trim()) {
       await onCreateTeam(teamName.trim());
-      setTeamName("");
+      setTeamName('');
       setIsDialogOpen(false);
     } else {
-      toast.error("Team name cannot be empty.");
+      toast.error('Team name cannot be empty.');
     }
   };
 
@@ -79,7 +85,12 @@ const TeamsPage: React.FC<TeamsPageProps> = ({ teams, onAddPlayer, onCreateTeam,
 
       <div className="mt-8">
         <h2 className="text-2xl font-semibold mb-4">Your Teams</h2>
-        <TeamList teams={teams} onAddPlayer={onAddPlayer} onDeleteTeam={onDeleteTeam} onEditTeam={onEditTeam} />
+        <TeamList
+          teams={teams}
+          onAddPlayer={onAddPlayer}
+          onDeleteTeam={onDeleteTeam}
+          onEditTeam={onEditTeam}
+        />
       </div>
     </div>
   );
