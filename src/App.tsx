@@ -20,6 +20,7 @@ import { Team, Player, Match, TrainingSession } from './types';
 import { supabase } from './integrations/supabase/client';
 import { toast } from 'sonner';
 import { Session } from '@supabase/supabase-js';
+import { handleDatabaseError } from './utils/errorHandler';
 
 const queryClient = new QueryClient();
 
@@ -34,14 +35,6 @@ const App = () => {
   >([]);
   const [loadingData, setLoadingData] = React.useState(false);
 
-  console.log(
-    'App render: loadingAuth =',
-    loadingAuth,
-    ', loadingData =',
-    loadingData,
-    ', session =',
-    session
-  );
 
   React.useEffect(() => {
     console.log('App component mounted');
@@ -54,8 +47,7 @@ const App = () => {
   const fetchTeams = async () => {
     const { data, error } = await supabase.from('teams').select('*');
     if (error) {
-      console.error('Error fetching teams:', error);
-      toast.error('Failed to load teams.');
+      handleDatabaseError(error, 'fetch teams');
       return [];
     }
     // Map snake_case from Supabase to camelCase for the Team interface
@@ -67,22 +59,25 @@ const App = () => {
   };
 
   const fetchPlayers = async () => {
+    console.log('Fetching players from database...');
     const { data, error } = await supabase.from('players').select('*');
     if (error) {
-      console.error('Error fetching players:', error);
-      toast.error('Failed to load players.');
+      handleDatabaseError(error, 'fetch players');
       return [];
     }
     // Map snake_case from Supabase to camelCase for the Player interface
-    return (data || []).map((player: any) => ({
+    const mappedPlayers = (data || []).map((player: any) => ({
       id: player.id,
       name: player.name,
       teamId: player.team_id,
+      position: player.position || '',
       matchesPlayed: player.matches_played,
       trainingsAttended: player.trainings_attended,
       goals: player.goals,
       assists: player.assists,
     }));
+    console.log('Fetched players from database:', mappedPlayers);
+    return mappedPlayers;
   };
 
   const fetchMatches = async () => {
@@ -123,7 +118,6 @@ const App = () => {
 
   React.useEffect(() => {
     const loadAllData = async () => {
-      console.log('loadAllData called. Current session:', session);
       if (session) {
         setLoadingData(true);
         console.log(
@@ -144,8 +138,7 @@ const App = () => {
           setTrainingSessions(trainingSessionsData);
           console.log('Data fetched successfully.');
         } catch (error) {
-          console.error('Error during Promise.all data fetch:', error);
-          toast.error('An error occurred while fetching initial data.');
+          handleDatabaseError(error, 'fetch initial data');
         } finally {
           setLoadingData(false);
           console.log(
@@ -154,7 +147,6 @@ const App = () => {
           );
         }
       } else {
-        console.log('No session in loadAllData, clearing data.');
         setTeams([]);
         setPlayers([]);
         setMatches([]);
@@ -209,7 +201,6 @@ const App = () => {
   };
 
   const handleAddPlayer = async (newPlayer: Omit<Player, 'id'>) => {
-    console.log('Attempting to insert with user_id:', session?.user?.id);
     if (!session?.user?.id) {
       toast.error('You must be logged in to add a player.');
       return;
@@ -218,6 +209,7 @@ const App = () => {
     const playerToInsert = {
       name: newPlayer.name,
       team_id: newPlayer.teamId,
+      position: newPlayer.position || '',
       matches_played: newPlayer.matchesPlayed,
       trainings_attended: newPlayer.trainingsAttended,
       goals: newPlayer.goals,
@@ -244,6 +236,7 @@ const App = () => {
     const playerToUpdate = {
       name: updatedPlayer.name,
       team_id: updatedPlayer.teamId,
+      position: updatedPlayer.position || '',
       matches_played: updatedPlayer.matchesPlayed,
       trainings_attended: updatedPlayer.trainingsAttended,
       goals: updatedPlayer.goals,
@@ -339,21 +332,34 @@ const App = () => {
       fetchTrainingSessions().then(setTrainingSessions);
 
       // Update players' training attendance
+      console.log('Updating attendance for players:', newSession.attendedPlayerIds);
+      console.log('Current players state:', players);
+
       for (const playerId of newSession.attendedPlayerIds) {
         const playerToUpdate = players.find((p) => p.id === playerId);
+        console.log(`Found player ${playerId}:`, playerToUpdate);
+
         if (playerToUpdate) {
+          const newAttendanceCount = playerToUpdate.trainingsAttended + 1;
+          console.log(`Updating player ${playerId} attendance from ${playerToUpdate.trainingsAttended} to ${newAttendanceCount}`);
+
           const { error: updateError } = await supabase
             .from('players')
             .update({
-              trainings_attended: playerToUpdate.trainingsAttended + 1,
+              trainings_attended: newAttendanceCount,
             })
             .eq('id', playerId);
+
           if (updateError) {
             console.error(
               `Error updating training count for player ${playerId}:`,
               updateError
             );
+          } else {
+            console.log(`Successfully updated player ${playerId} attendance to ${newAttendanceCount}`);
           }
+        } else {
+          console.warn(`Player with ID ${playerId} not found in current players state`);
         }
       }
       fetchPlayers().then(setPlayers);
@@ -368,8 +374,19 @@ const App = () => {
       toast.error(
         'Attended player IDs are required for updating a training session.'
       );
-      return;
+      throw new Error('Attended player IDs are required');
     }
+
+    // Optimistically update the UI first
+    const updatedSession = {
+      ...originalSession,
+      ...updatedSessionData,
+    };
+    setTrainingSessions(prev =>
+      prev.map(session =>
+        session.id === originalSession.id ? updatedSession : session
+      )
+    );
 
     // Update the training session itself
     const sessionToUpdate = {
@@ -386,7 +403,13 @@ const App = () => {
     if (sessionUpdateError) {
       console.error('Error updating training session:', sessionUpdateError);
       toast.error('Failed to update training session.');
-      return;
+      // Revert the optimistic update on error
+      setTrainingSessions(prev =>
+        prev.map(session =>
+          session.id === originalSession.id ? originalSession : session
+        )
+      );
+      throw new Error('Failed to update training session');
     }
 
     // Calculate newly added and removed players for attendance count updates
@@ -396,7 +419,7 @@ const App = () => {
     const newlyAttendedPlayerIds = updatedSessionData.attendedPlayerIds.filter(
       (id) => !originalAttendedIds.has(id)
     );
-    const removedPlayerIds = originalAttendedIds.filter(
+    const removedPlayerIds = Array.from(originalAttendedIds).filter(
       (id) => !updatedAttendedIds.has(id)
     );
 
@@ -435,6 +458,7 @@ const App = () => {
     }
 
     toast.success('Training session updated successfully!');
+    // Still fetch fresh data to ensure consistency
     fetchTrainingSessions().then(setTrainingSessions);
     fetchPlayers().then(setPlayers); // Refetch players to update their attendance counts
   };

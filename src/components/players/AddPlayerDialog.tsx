@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Player, Team } from '@/types';
 import { toast } from 'sonner';
+import { validatePlayerData } from '@/utils/validation';
 
 interface AddPlayerDialogProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ const AddPlayerDialog: React.FC<AddPlayerDialogProps> = ({
 }) => {
   const [playerName, setPlayerName] = React.useState('');
   const [selectedTeamId, setSelectedTeamId] = React.useState(teamId || '');
+  const [position, setPosition] = React.useState('');
 
   // Use effect to update selectedTeamId when teamId prop changes
   React.useEffect(() => {
@@ -40,28 +42,37 @@ const AddPlayerDialog: React.FC<AddPlayerDialogProps> = ({
   }, [teamId]);
 
   const handleAddPlayer = async () => {
-    const effectiveTeamId = teamId || selectedTeamId;
+    try {
+      const effectiveTeamId = teamId || selectedTeamId;
 
-    if (playerName.trim() && effectiveTeamId) {
-      await onAddPlayer({
-        name: playerName.trim(),
-        teamId: effectiveTeamId,
+      if (!effectiveTeamId) {
+        toast.error('Please select a team.');
+        return;
+      }
+
+      // Validate and sanitize player data
+      const playerData = validatePlayerData({
+        name: playerName,
+        position: position,
         matchesPlayed: 0,
         trainingsAttended: 0,
         goals: 0,
         assists: 0,
       });
+
+      await onAddPlayer({
+        ...playerData,
+        teamId: effectiveTeamId,
+      });
+
       setPlayerName('');
+      setPosition('');
       if (!teamId) { // Only clear selection if using teams dropdown
         setSelectedTeamId('');
       }
       onOpenChange(false);
-    } else {
-      if (!playerName.trim()) {
-        toast.error('Player name cannot be empty.');
-      } else if (!effectiveTeamId) {
-        toast.error('Please select a team.');
-      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Invalid player data');
     }
   };
 
@@ -89,6 +100,23 @@ const AddPlayerDialog: React.FC<AddPlayerDialogProps> = ({
               className="col-span-3"
               placeholder="e.g., Lionel Messi"
             />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="position" className="text-right">
+              Position
+            </Label>
+            <Select value={position} onValueChange={setPosition}>
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Select position (optional)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Goalkeeper">Goalkeeper</SelectItem>
+                <SelectItem value="Defender">Defender</SelectItem>
+                <SelectItem value="Midfielder">Midfielder</SelectItem>
+                <SelectItem value="Forward">Forward</SelectItem>
+                <SelectItem value="Striker">Striker</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           {teams && !teamId && (
             <div className="grid grid-cols-4 items-center gap-4">

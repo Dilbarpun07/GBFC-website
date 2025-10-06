@@ -90,6 +90,12 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
       </CardHeader>
       <CardContent className="grid gap-2 text-sm text-muted-foreground">
         <div className="flex justify-between">
+          <span>Position:</span>
+          <span className="font-semibold text-foreground">
+            {player.position || 'Not Set'}
+          </span>
+        </div>
+        <div className="flex justify-between">
           <span>Matches Played:</span>
           <span className="font-semibold text-foreground">
             {player.matchesPlayed}
@@ -112,13 +118,17 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
           </span>
         </div>
       </CardContent>
-      <EditPlayerDialog
-        isOpen={isEditPlayerDialogOpen}
-        onOpenChange={setIsEditPlayerDialogOpen}
-        playerToEdit={player}
-        teams={teams}
-        onEditPlayer={onEditPlayer}
-      />
+      {isEditPlayerDialogOpen && (
+        <EditPlayerDialog
+          player={player}
+          teams={teams}
+          onClose={() => setIsEditPlayerDialogOpen(false)}
+          onSave={(updatedPlayer) => {
+            onEditPlayer(player.id, updatedPlayer);
+            setIsEditPlayerDialogOpen(false);
+          }}
+        />
+      )}
     </Card>
   );
 };

@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { List, LayoutGrid } from 'lucide-react';
 import AddTrainingSessionDialog from '@/components/training/AddTrainingSessionDialog';
 import TrainingSessionList from '@/components/training/TrainingSessionList';
+import TrainingSessionCollapsibleList from '@/components/training/TrainingSessionCollapsibleList';
 import { Team, Player, TrainingSession } from '@/types';
 
 interface TrainingPageProps {
@@ -24,15 +26,38 @@ const TrainingPage: React.FC<TrainingPageProps> = ({
   onDeleteTrainingSession,
   onEditTrainingSession,
 }) => {
-  const [isAddSessionDialogOpen, setIsAddSessionDialogOpen] =
-    React.useState(false);
+  const [isAddSessionDialogOpen, setIsAddSessionDialogOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'list' | 'cards'>('list');
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">Training Sessions</h1>
-      <p className="text-lg text-muted-foreground mb-6">
-        Record and review your team's training sessions and player attendance.
-      </p>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Training Sessions</h1>
+          <p className="text-lg text-muted-foreground">
+            Record and review your team's training sessions and player attendance.
+          </p>
+        </div>
+
+        <div className="flex gap-2">
+          <Button
+            variant={viewMode === 'list' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setViewMode('list')}
+          >
+            <List className="w-4 h-4 mr-2" />
+            List View
+          </Button>
+          <Button
+            variant={viewMode === 'cards' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setViewMode('cards')}
+          >
+            <LayoutGrid className="w-4 h-4 mr-2" />
+            Card View
+          </Button>
+        </div>
+      </div>
 
       <Button onClick={() => setIsAddSessionDialogOpen(true)}>
         Add New Training Session
@@ -48,13 +73,23 @@ const TrainingPage: React.FC<TrainingPageProps> = ({
 
       <div className="mt-8">
         <h2 className="text-2xl font-semibold mb-4">Recorded Sessions</h2>
-        <TrainingSessionList
-          trainingSessions={trainingSessions}
-          teams={teams}
-          players={players}
-          onDeleteTrainingSession={onDeleteTrainingSession}
-          onEditTrainingSession={onEditTrainingSession}
-        />
+        {viewMode === 'list' ? (
+          <TrainingSessionCollapsibleList
+            trainingSessions={trainingSessions}
+            teams={teams}
+            players={players}
+            onDeleteTrainingSession={onDeleteTrainingSession}
+            onEditTrainingSession={onEditTrainingSession}
+          />
+        ) : (
+          <TrainingSessionList
+            trainingSessions={trainingSessions}
+            teams={teams}
+            players={players}
+            onDeleteTrainingSession={onDeleteTrainingSession}
+            onEditTrainingSession={onEditTrainingSession}
+          />
+        )}
       </div>
     </div>
   );

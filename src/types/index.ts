@@ -8,6 +8,7 @@ export interface Player {
   id: string;
   name: string;
   teamId: string;
+  position: string;
   matchesPlayed: number;
   trainingsAttended: number;
   goals: number;

@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Player, Team } from '@/types';
 import { toast } from 'sonner';
+import { validatePlayerData } from '@/utils/validation';
 import {
   Select,
   SelectContent,
@@ -21,81 +22,85 @@ import {
 } from '@/components/ui/select';
 
 interface EditPlayerDialogProps {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-  playerToEdit: Player;
+  player: Player;
   teams: Team[];
-  onEditPlayer: (
-    playerId: string,
-    updatedPlayer: Partial<Omit<Player, 'id'>>
-  ) => void;
+  onClose: () => void;
+  onSave: (updatedPlayer: Partial<Omit<Player, 'id'>>) => void;
 }
 
 const EditPlayerDialog: React.FC<EditPlayerDialogProps> = ({
-  isOpen,
-  onOpenChange,
-  playerToEdit,
+  player,
   teams,
-  onEditPlayer,
+  onClose,
+  onSave,
 }) => {
-  const [playerName, setPlayerName] = React.useState(playerToEdit.name);
-  const [selectedTeamId, setSelectedTeamId] = React.useState(
-    playerToEdit.teamId
-  );
+  const [playerName, setPlayerName] = React.useState(player.name);
+  const [selectedTeamId, setSelectedTeamId] = React.useState(player.teamId);
+  const [position, setPosition] = React.useState(player.position || '');
   const [matchesPlayed, setMatchesPlayed] = React.useState(
-    playerToEdit.matchesPlayed.toString()
+    player.matchesPlayed.toString()
   );
   const [trainingsAttended, setTrainingsAttended] = React.useState(
-    playerToEdit.trainingsAttended.toString()
+    player.trainingsAttended.toString()
   );
-  const [goals, setGoals] = React.useState(playerToEdit.goals.toString());
-  const [assists, setAssists] = React.useState(playerToEdit.assists.toString());
+  const [goals, setGoals] = React.useState(player.goals.toString());
+  const [assists, setAssists] = React.useState(player.assists.toString());
 
   React.useEffect(() => {
-    if (isOpen && playerToEdit) {
-      setPlayerName(playerToEdit.name);
-      setSelectedTeamId(playerToEdit.teamId);
-      setMatchesPlayed(playerToEdit.matchesPlayed.toString());
-      setTrainingsAttended(playerToEdit.trainingsAttended.toString());
-      setGoals(playerToEdit.goals.toString());
-      setAssists(playerToEdit.assists.toString());
-    }
-  }, [isOpen, playerToEdit]);
+    setPlayerName(player.name);
+    setSelectedTeamId(player.teamId);
+    setPosition(player.position || '');
+    setMatchesPlayed(player.matchesPlayed.toString());
+    setTrainingsAttended(player.trainingsAttended.toString());
+    setGoals(player.goals.toString());
+    setAssists(player.assists.toString());
+  }, [player]);
 
-  const handleEditPlayer = async () => {
-    const updatedPlayer: Partial<Omit<Player, 'id'>> = {
-      name: playerName.trim(),
-      teamId: selectedTeamId,
-      matchesPlayed: parseInt(matchesPlayed, 10) || 0,
-      trainingsAttended: parseInt(trainingsAttended, 10) || 0,
-      goals: parseInt(goals, 10) || 0,
-      assists: parseInt(assists, 10) || 0,
-    };
+  const handleSave = async () => {
+    try {
+      if (!selectedTeamId) {
+        toast.error('Please select a team.');
+        return;
+      }
 
-    // Check if any actual changes were made
-    const hasChanges =
-      updatedPlayer.name !== playerToEdit.name ||
-      updatedPlayer.teamId !== playerToEdit.teamId ||
-      updatedPlayer.matchesPlayed !== playerToEdit.matchesPlayed ||
-      updatedPlayer.trainingsAttended !== playerToEdit.trainingsAttended ||
-      updatedPlayer.goals !== playerToEdit.goals ||
-      updatedPlayer.assists !== playerToEdit.assists;
+      // Validate and sanitize player data
+      const validatedData = validatePlayerData({
+        name: playerName,
+        position: position,
+        matchesPlayed: parseInt(matchesPlayed, 10) || 0,
+        trainingsAttended: parseInt(trainingsAttended, 10) || 0,
+        goals: parseInt(goals, 10) || 0,
+        assists: parseInt(assists, 10) || 0,
+      });
 
-    if (playerName.trim() && selectedTeamId) {
+      const updatedPlayer: Partial<Omit<Player, 'id'>> = {
+        ...validatedData,
+        teamId: selectedTeamId,
+      };
+
+      // Check if any actual changes were made
+      const hasChanges =
+        updatedPlayer.name !== player.name ||
+        updatedPlayer.teamId !== player.teamId ||
+        updatedPlayer.position !== (player.position || '') ||
+        updatedPlayer.matchesPlayed !== player.matchesPlayed ||
+        updatedPlayer.trainingsAttended !== player.trainingsAttended ||
+        updatedPlayer.goals !== player.goals ||
+        updatedPlayer.assists !== player.assists;
+
       if (hasChanges) {
-        await onEditPlayer(playerToEdit.id, updatedPlayer);
-        onOpenChange(false);
+        await onSave(updatedPlayer);
       } else {
         toast.info('No changes made to the player details.');
-        onOpenChange(false);
+        onClose();
       }
-    } else {
-      toast.error('Player name and team cannot be empty.');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Invalid player data');
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Edit Player</DialogTitle>
@@ -130,6 +135,23 @@ const EditPlayerDialog: React.FC<EditPlayerDialogProps> = ({
                     {team.name}
                   </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="position" className="text-right">
+              Position
+            </Label>
+            <Select value={position} onValueChange={setPosition}>
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Select position" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Goalkeeper">Goalkeeper</SelectItem>
+                <SelectItem value="Defender">Defender</SelectItem>
+                <SelectItem value="Midfielder">Midfielder</SelectItem>
+                <SelectItem value="Forward">Forward</SelectItem>
+                <SelectItem value="Striker">Striker</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -183,7 +205,10 @@ const EditPlayerDialog: React.FC<EditPlayerDialogProps> = ({
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleEditPlayer}>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit" onClick={handleSave}>
             Save Changes
           </Button>
         </DialogFooter>

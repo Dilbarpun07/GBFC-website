@@ -9,24 +9,15 @@ interface AuthWrapperProps {
 }
 
 const AuthWrapper: React.FC<AuthWrapperProps> = ({ session }) => {
-  console.log('AuthWrapper component rendered. Session received:', session);
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    console.log('AuthWrapper useEffect triggered.');
-    console.log('Current session in AuthWrapper:', session);
-    console.log('Current pathname in AuthWrapper:', window.location.pathname);
 
     if (!session) {
-      console.log('No session found, navigating to /login.');
       navigate('/login');
     } else {
-      console.log('Session found.');
       if (window.location.pathname === '/login') {
-        console.log('Currently on /login with a session, navigating to /.');
         navigate('/');
-      } else {
-        console.log('Session found, not on /login, staying on current page.');
       }
     }
   }, [session, navigate]);

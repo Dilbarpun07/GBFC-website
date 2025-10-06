@@ -25,10 +25,8 @@ const AuthHandler: React.FC<AuthHandlerProps> = ({
     supabase.auth
       .getSession()
       .then(({ data: { session } }) => {
-        console.log('AuthHandler: getSession resolved. Session:', session);
         setSession(session);
         setLoadingAuth(false);
-        console.log('AuthHandler: setLoadingAuth(false) after getSession.');
       })
       .catch((error) => {
         console.error('AuthHandler: Error getting session:', error);
