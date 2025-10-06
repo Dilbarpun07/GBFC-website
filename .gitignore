@@ -27,3 +27,6 @@ dist-ssr
 # Ignore environment variable files
 .env
 AI_RULES.md
+
+# Claude Code
+claude/
