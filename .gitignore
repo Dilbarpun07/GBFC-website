@@ -24,3 +24,6 @@ dist-ssr
 *.sln
 *.sw?
 
+# Ignore environment variable files
+.env
+AI_RULES.md

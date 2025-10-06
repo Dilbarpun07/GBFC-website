@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -25,7 +26,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Team, Player, TrainingSession } from '@/types';
 import { toast } from 'sonner';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Search } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -49,15 +50,35 @@ const AddTrainingSessionDialog: React.FC<AddTrainingSessionDialogProps> = ({
   const [attendedPlayerIds, setAttendedPlayerIds] = React.useState<string[]>(
     []
   );
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [selectedPosition, setSelectedPosition] = React.useState<string>('All');
 
-  const filteredPlayers = players.filter(
+  const teamPlayers = players.filter(
     (player) => player.teamId === selectedTeamId
   );
+
+  // Apply search and position filters
+  const filteredPlayers = teamPlayers.filter((player) => {
+    const matchesSearch = player.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesPosition = selectedPosition === 'All' || player.position === selectedPosition;
+    return matchesSearch && matchesPosition;
+  });
+
+  // Get unique positions from team players
+  const positions = ['All', ...Array.from(new Set(teamPlayers.map(p => p.position)))].filter(Boolean);
 
   const handlePlayerAttendanceChange = (playerId: string, checked: boolean) => {
     setAttendedPlayerIds((prev) =>
       checked ? [...prev, playerId] : prev.filter((id) => id !== playerId)
     );
+  };
+
+  const handleSelectAll = () => {
+    setAttendedPlayerIds(filteredPlayers.map(p => p.id));
+  };
+
+  const handleClearAll = () => {
+    setAttendedPlayerIds([]);
   };
 
   const handleAddSession = async () => {
@@ -78,8 +99,10 @@ const AddTrainingSessionDialog: React.FC<AddTrainingSessionDialogProps> = ({
   };
 
   React.useEffect(() => {
-    // Reset attended players when team changes
+    // Reset attended players and filters when team changes
     setAttendedPlayerIds([]);
+    setSearchQuery('');
+    setSelectedPosition('All');
   }, [selectedTeamId]);
 
   return (
@@ -136,38 +159,94 @@ const AddTrainingSessionDialog: React.FC<AddTrainingSessionDialogProps> = ({
               </PopoverContent>
             </Popover>
           </div>
-          {selectedTeamId && filteredPlayers.length > 0 && (
-            <div className="grid grid-cols-4 gap-4">
-              <Label className="text-right mt-2">Players</Label>
-              <div className="col-span-3 space-y-2 max-h-48 overflow-y-auto border rounded-md p-2">
-                {filteredPlayers.map((player) => (
-                  <div key={player.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`player-${player.id}`}
-                      checked={attendedPlayerIds.includes(player.id)}
-                      onCheckedChange={(checked) =>
-                        handlePlayerAttendanceChange(
-                          player.id,
-                          checked as boolean
-                        )
-                      }
-                    />
-                    <label
-                      htmlFor={`player-${player.id}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      {player.name}
-                    </label>
-                  </div>
+          {selectedTeamId && teamPlayers.length > 0 && (
+            <div className="grid gap-3">
+              <Label>Players ({attendedPlayerIds.length} selected)</Label>
+
+              {/* Search Bar */}
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search players..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-8"
+                />
+              </div>
+
+              {/* Position Filters */}
+              <div className="flex flex-wrap gap-2">
+                {positions.map((position) => (
+                  <Button
+                    key={position}
+                    variant={selectedPosition === position ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedPosition(position)}
+                    className="text-xs"
+                  >
+                    {position}
+                  </Button>
                 ))}
+              </div>
+
+              {/* Bulk Actions */}
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSelectAll}
+                  className="flex-1"
+                >
+                  Select All
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleClearAll}
+                  className="flex-1"
+                >
+                  Clear All
+                </Button>
+              </div>
+
+              {/* Player List */}
+              <div className="space-y-1 max-h-64 overflow-y-auto border rounded-md p-3">
+                {filteredPlayers.length > 0 ? (
+                  filteredPlayers.map((player) => (
+                    <div
+                      key={player.id}
+                      className="flex items-center space-x-2 p-1.5 hover:bg-accent rounded"
+                    >
+                      <Checkbox
+                        id={`player-${player.id}`}
+                        checked={attendedPlayerIds.includes(player.id)}
+                        onCheckedChange={(checked) =>
+                          handlePlayerAttendanceChange(
+                            player.id,
+                            checked as boolean
+                          )
+                        }
+                      />
+                      <label
+                        htmlFor={`player-${player.id}`}
+                        className="text-sm flex-1 cursor-pointer flex items-center justify-between"
+                      >
+                        <span>{player.name}</span>
+                        <span className="text-xs text-muted-foreground">{player.position}</span>
+                      </label>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center text-sm text-muted-foreground py-4">
+                    No players found matching your criteria.
+                  </div>
+                )}
               </div>
             </div>
           )}
-          {selectedTeamId && filteredPlayers.length === 0 && (
-            <div className="grid grid-cols-4 gap-4">
-              <div className="col-span-4 text-center text-sm text-muted-foreground">
-                No players found for this team.
-              </div>
+          {selectedTeamId && teamPlayers.length === 0 && (
+            <div className="text-center text-sm text-muted-foreground py-4">
+              No players found for this team.
             </div>
           )}
         </div>

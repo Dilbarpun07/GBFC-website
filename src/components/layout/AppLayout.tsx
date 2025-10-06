@@ -9,7 +9,7 @@ import Header from './Header';
 import Sidebar from './Sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
-import { MadeWithDyad } from '@/components/made-with-dyad';
+import { SocialLinks } from '@/components/SocialLinks';
 import { Team, Player, Match, TrainingSession } from '@/types';
 
 interface AppLayoutProps {
@@ -82,7 +82,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
               </div>
               <Sidebar />
               <div className="mt-auto">
-                <MadeWithDyad />
+                <SocialLinks />
               </div>
             </div>
           </SheetContent>
@@ -142,7 +142,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
           </div>
           <Sidebar isCollapsed={isSidebarCollapsed} />
           <div className="mt-auto">
-            <MadeWithDyad />
+            <SocialLinks />
           </div>
         </div>
       </ResizablePanel>
